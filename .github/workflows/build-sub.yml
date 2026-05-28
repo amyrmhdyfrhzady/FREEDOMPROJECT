@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # کل تاریخچه را دریافت کن
+          fetch-depth: 0
 
       - name: Download multiple external sub files
         run: |
@@ -35,9 +35,8 @@ jobs:
             echo "Downloaded $url -> $filename, lines: $(wc -l < "$filename")"
             ((counter++))
           done
-        
 
-      - name: Merge all configs (sort by latest commit of each file)
+      - name: Merge and deduplicate configs
         run: |
           echo "=== DEBUG: List all files in configs before sorting ==="
           ls -la configs/
@@ -64,13 +63,6 @@ jobs:
             done
             echo ""
             
-            echo "=== Sorted by timestamp (newest first) ==="
-            sort -t'|' -k1 -rn "$tmp_file" | while IFS='|' read -r ts file; do
-              date_str=$(date -d "@$ts" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "unknown")
-              echo "$ts -> $file ($date_str)"
-            done
-            echo ""
-            
             echo "=== Adding personal files in sorted order ==="
             sort -t'|' -k1 -rn "$tmp_file" | cut -d'|' -f2 > sorted_files.txt
             while IFS= read -r file; do
@@ -87,25 +79,62 @@ jobs:
             fi
           done
           
+          # حذف خطوط تکراری و خالی
+          echo "=== Removing duplicates and empty lines ==="
+          sort -u sub.txt | grep -v '^$' > sub_unique.txt
+          mv sub_unique.txt sub.txt
+          
+          # محدود کردن تعداد خطوط (اختیاری - مثلاً 5000 خط اول)
+          # head -n 5000 sub.txt > sub_temp.txt
+          # mv sub_temp.txt sub.txt
+          
           if [ ! -s sub.txt ]; then
             echo "# No configs found" > sub.txt
           fi
           
           echo "=== Total lines in sub.txt: $(wc -l < sub.txt) ==="
+          echo "=== File size: $(du -h sub.txt | cut -f1) ==="
 
-      - name: Convert to base64
+      - name: Compress to gzip (smaller than base64)
         run: |
-          base64 -w 0 sub.txt > subscribe.txt
+          # گزینه 1: فشرده‌سازی با gzip
+          gzip -c sub.txt > subscribe.txt.gz
+          
+          # گزینه 2: اگر باز هم base64 می‌خواهید ولی فشرده
+          gzip -c sub.txt | base64 -w 0 > subscribe_base64.txt
+          
+          # نمایش حجم فایل‌ها
+          echo "=== Original: $(du -h sub.txt | cut -f1)"
+          echo "=== Gzipped: $(du -h subscribe.txt.gz | cut -f1)"
+          echo "=== Gzipped+Base64: $(du -h subscribe_base64.txt | cut -f1)"
 
-      - name: Commit and push
+      - name: Split into multiple files (if still too large)
+        run: |
+          # تقسیم فایل به چند قسمت 50 مگابایتی
+          split -b 50m -d sub.txt subscribe_part_
+          
+          # یا تقسیم بر اساس خطوط
+          # split -l 10000 sub.txt subscribe_part_
+          
+          ls -lh subscribe_part_*
+
+      - name: Commit and push (with compression)
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add subscribe.txt
+          
+          # حذف فایل قبلی subscribe.txt اگر هست
+          git rm --ignore-unmatch subscribe.txt
+          
+          # اضافه کردن فایل فشرده شده
+          git add subscribe.txt.gz
+          # یا git add subscribe_base64.txt
+          # یا git add subscribe_part_*
+          
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Auto update subscription (sorted by commit time)"
+            git commit -m "Auto update subscription (compressed)"
             git pull --rebase origin main
             git push
           fi
