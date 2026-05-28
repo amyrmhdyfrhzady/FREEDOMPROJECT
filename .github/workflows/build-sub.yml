@@ -20,14 +20,22 @@ jobs:
       - name: Download multiple external sub files
         run: |
           mkdir -p configs
+          
           mapfile -t urls < <(grep -oE 'https?://[^"]+' cleaned_sub_links.txt)
+          
           counter=1
           for url in "${urls[@]}"; do
             filename="configs/external_${counter}.txt"
-            curl -sL "$url" -o "$filename"
+            
+            curl -sL --fail "$url" -o "$filename" || {
+              echo "Failed to download: $url"
+              continue
+            }
+            
             echo "Downloaded $url -> $filename, lines: $(wc -l < "$filename")"
             ((counter++))
           done
+        
 
       - name: Merge all configs (sort by latest commit of each file)
         run: |
