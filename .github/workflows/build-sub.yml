@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # کل تاریخچه را دریافت کن
 
       - name: Download multiple external sub files
         run: |
@@ -35,8 +35,9 @@ jobs:
             echo "Downloaded $url -> $filename, lines: $(wc -l < "$filename")"
             ((counter++))
           done
+        
 
-      - name: Merge and deduplicate configs
+      - name: Merge all configs (sort by latest commit of each file)
         run: |
           echo "=== DEBUG: List all files in configs before sorting ==="
           ls -la configs/
@@ -63,6 +64,13 @@ jobs:
             done
             echo ""
             
+            echo "=== Sorted by timestamp (newest first) ==="
+            sort -t'|' -k1 -rn "$tmp_file" | while IFS='|' read -r ts file; do
+              date_str=$(date -d "@$ts" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "unknown")
+              echo "$ts -> $file ($date_str)"
+            done
+            echo ""
+            
             echo "=== Adding personal files in sorted order ==="
             sort -t'|' -k1 -rn "$tmp_file" | cut -d'|' -f2 > sorted_files.txt
             while IFS= read -r file; do
@@ -79,62 +87,57 @@ jobs:
             fi
           done
           
-          # حذف خطوط تکراری و خالی
-          echo "=== Removing duplicates and empty lines ==="
+          # ============================================
+          # مرحله 1: حذف خطوط تکراری و خالی (بهینه‌سازی اولیه)
+          # ============================================
+          echo "=== Removing duplicate and empty lines ==="
           sort -u sub.txt | grep -v '^$' > sub_unique.txt
           mv sub_unique.txt sub.txt
           
-          # محدود کردن تعداد خطوط (اختیاری - مثلاً 5000 خط اول)
-          # head -n 5000 sub.txt > sub_temp.txt
-          # mv sub_temp.txt sub.txt
+          # ============================================
+          # مرحله 2: محدود کردن تعداد خطوط (مناسب برای کلاینت موبایل)
+          # ============================================
+          # تعداد مورد نظر خود را اینجا تغییر دهید (پیش‌فرض 200)
+          MAX_LINES=15000
           
+          echo "=== Limiting to $MAX_LINES lines (for mobile client compatibility) ==="
+          TOTAL_LINES=$(wc -l < sub.txt)
+          
+          if [ $TOTAL_LINES -gt $MAX_LINES ]; then
+            echo "Original lines: $TOTAL_LINES"
+            head -n $MAX_LINES sub.txt > sub_limited.txt
+            mv sub_limited.txt sub.txt
+            echo "Reduced to $MAX_LINES lines (removed $((TOTAL_LINES - MAX_LINES)) lines)"
+          else
+            echo "Lines ($TOTAL_LINES) are within limit, no truncation needed"
+          fi
+          
+          # ============================================
+          # مرحله 3: بررسی نهایی
+          # ============================================
           if [ ! -s sub.txt ]; then
             echo "# No configs found" > sub.txt
           fi
           
-          echo "=== Total lines in sub.txt: $(wc -l < sub.txt) ==="
-          echo "=== File size: $(du -h sub.txt | cut -f1) ==="
+          echo "=== Final lines in sub.txt: $(wc -l < sub.txt) ==="
+          echo "=== Final file size: $(du -h sub.txt | cut -f1) ==="
 
-      - name: Compress to gzip (smaller than base64)
+      - name: Convert to base64
         run: |
-          # گزینه 1: فشرده‌سازی با gzip
-          gzip -c sub.txt > subscribe.txt.gz
+          base64 -w 0 sub.txt > subscribe.txt
           
-          # گزینه 2: اگر باز هم base64 می‌خواهید ولی فشرده
-          gzip -c sub.txt | base64 -w 0 > subscribe_base64.txt
-          
-          # نمایش حجم فایل‌ها
-          echo "=== Original: $(du -h sub.txt | cut -f1)"
-          echo "=== Gzipped: $(du -h subscribe.txt.gz | cut -f1)"
-          echo "=== Gzipped+Base64: $(du -h subscribe_base64.txt | cut -f1)"
+          # نمایش حجم نهایی فایل base64 شده
+          echo "=== subscribe.txt size: $(du -h subscribe.txt | cut -f1) ==="
 
-      - name: Split into multiple files (if still too large)
-        run: |
-          # تقسیم فایل به چند قسمت 50 مگابایتی
-          split -b 50m -d sub.txt subscribe_part_
-          
-          # یا تقسیم بر اساس خطوط
-          # split -l 10000 sub.txt subscribe_part_
-          
-          ls -lh subscribe_part_*
-
-      - name: Commit and push (with compression)
+      - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          
-          # حذف فایل قبلی subscribe.txt اگر هست
-          git rm --ignore-unmatch subscribe.txt
-          
-          # اضافه کردن فایل فشرده شده
-          git add subscribe.txt.gz
-          # یا git add subscribe_base64.txt
-          # یا git add subscribe_part_*
-          
+          git add subscribe.txt
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Auto update subscription (compressed)"
+            git commit -m "Auto update subscription (limited to 200 lines for mobile compatibility)"
             git pull --rebase origin main
             git push
           fi
