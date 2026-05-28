@@ -95,10 +95,24 @@ jobs:
           mv sub_unique.txt sub.txt
           
           # ============================================
-          # مرحله 2: محدود کردن تعداد خطوط (مناسب برای کلاینت موبایل)
+          # مرحله 2: فیلتر کردن فقط لینک‌های معتبر کانفیگ
+          # ============================================
+          echo "=== Filtering valid config links only ==="
+          grep -E '^(vless://|vmess://|ss://|trojan://|ssr://)' sub.txt > sub_valid.txt
+          
+          if [ ! -s sub_valid.txt ]; then
+            echo "ERROR: No valid configs found! Check your sources." >&2
+            echo "# No valid configs found" > sub.txt
+          else
+            mv sub_valid.txt sub.txt
+            echo "Valid configs found: $(wc -l < sub.txt)"
+          fi
+          
+          # ============================================
+          # مرحله 3: محدود کردن تعداد خطوط (مناسب برای کلاینت موبایل)
           # ============================================
           # تعداد مورد نظر خود را اینجا تغییر دهید (پیش‌فرض 200)
-          MAX_LINES=2000
+          MAX_LINES=200
           
           echo "=== Limiting to $MAX_LINES lines (for mobile client compatibility) ==="
           TOTAL_LINES=$(wc -l < sub.txt)
@@ -113,7 +127,7 @@ jobs:
           fi
           
           # ============================================
-          # مرحله 3: بررسی نهایی
+          # مرحله 4: بررسی نهایی
           # ============================================
           if [ ! -s sub.txt ]; then
             echo "# No configs found" > sub.txt
@@ -132,12 +146,12 @@ jobs:
       - name: Commit and push
         run: |
           git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config.user.email "actions@github.com"
           git add subscribe.txt
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Auto update subscription (limited to 200 lines for mobile compatibility)"
+            git commit -m "Auto update subscription (filtered valid configs + limited to 200 lines)"
             git pull --rebase origin main
             git push
           fi
