@@ -20,9 +20,7 @@ jobs:
       - name: Download multiple external sub files
         run: |
           mkdir -p configs
-          
           mapfile -t urls < <(grep -oE 'https?://[^"]+' cleaned_sub_links.txt)
-          
           counter=1
           for url in "${urls[@]}"; do
             filename="configs/external_${counter}.txt"
