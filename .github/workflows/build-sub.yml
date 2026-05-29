@@ -94,7 +94,7 @@ jobs:
         run: |
           base64 -w 0 sub.txt > subscribe.txt
 
-      - name: Commit and push (FIXED)
+      - name: Commit and push (FIXED - no error on first run)
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
@@ -103,11 +103,13 @@ jobs:
           base64 -w 0 sub.txt > subscribe.txt
           echo "$(date +'%Y-%m-%d %H:%M:%S UTC') - Cron triggered" > .timestamp
         
-          git rm -f subscribe.txt .timestamp 2>/dev/null || true
           git add -f subscribe.txt .timestamp
-    
-          # همیشه commit کن (حتی بدون تغییر محتوا)
-          git commit -m "Force update $(date +'%Y-%m-%d %H:%M:%S')" --allow-empty-message || echo "Commit failed"
-    
-          git pull --rebase origin main --no-edit || true
-          git push --force-with-lease
+          
+          # بررسی تغییرات و commit در صورت نیاز
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto update subscription $(date +'%Y-%m-%d %H:%M:%S')"
+            git pull --rebase origin main --no-edit || true
+            git push
+          fi
