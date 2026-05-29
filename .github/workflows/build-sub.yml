@@ -21,102 +21,50 @@ jobs:
         run: |
           mkdir -p configs
           urls=(
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
+            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt"
+            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub2.txt"
             "https://vip.xoomail.us/sub/dGVzdDIzMzgyNjA3LDE3ODAwMzk4ODAXPu2XBMWvZ"
           )
           counter=1
           for url in "${urls[@]}"; do
             filename="configs/external_${counter}.txt"
             curl -sL "$url" -o "$filename"
-            lines=$(wc -l < "$filename")
-            echo "Downloaded $url -> $filename, lines: $lines"
-            
-            # دیباگ: نمایش 3 خط اول هر فایل دانلودی
-            echo "--- First 3 lines of $filename ---"
-            head -3 "$filename"
-            echo "---"
-            
+            echo "Downloaded $url -> $filename, lines: $(wc -l < "$filename")"
             ((counter++))
           done
 
-      - name: Merge all configs (sort by latest commit + filter valid links)
+      - name: Merge and filter configs
         run: |
-          echo "=== DEBUG: List all files in configs before sorting ==="
-          ls -la configs/
-          echo ""
-          
           > sub.txt
           
-          # ========================
-          # فایل‌های شخصی (با اولویت زمان کامیت)
-          # ========================
-          personal_files=()
           for f in configs/*.txt; do
             if [[ ! "$f" =~ external_[0-9]+\.txt$ ]]; then
-              personal_files+=("$f")
+              grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$f" >> sub.txt 2>/dev/null || true
             fi
           done
           
-          if [ ${#personal_files[@]} -gt 0 ]; then
-            echo "=== Getting last commit timestamp for each personal file ==="
-            tmp_file=$(mktemp)
-            for f in "${personal_files[@]}"; do
-              ts=$(git log -1 --format='%ct' -- "$f" 2>/dev/null || echo 0)
-              echo "$ts|$f"
-              echo "$ts|$f" >> "$tmp_file"
-            done
-            echo ""
-            
-            echo "=== Sorted by timestamp (newest first) ==="
-            sort -t'|' -k1 -rn "$tmp_file" | while IFS='|' read -r ts file; do
-              date_str=$(date -d "@$ts" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "unknown")
-              echo "$ts -> $file ($date_str)"
-            done
-            echo ""
-            
-            echo "=== Adding personal files (filtered) ==="
-            sort -t'|' -k1 -rn "$tmp_file" | cut -d'|' -f2 > sorted_files.txt
-            while IFS= read -r file; do
-              echo "  Processing $file"
-              # فیلتر: فقط لینک‌های معتبر را بگیر
-              grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$file" >> sub.txt || echo "    No valid links in $file"
-            done < sorted_files.txt
-          fi
-          
-          # ========================
-          # فایل‌های خارجی (با فیلتر)
-          # ========================
-          echo "=== Adding external files (filtered) ==="
           for f in configs/external_*.txt; do
             if [ -f "$f" ]; then
-              echo "  Processing $f"
-              grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$f" >> sub.txt || echo "    No valid links in $f"
+              grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$f" >> sub.txt 2>/dev/null || true
             fi
           done
           
-          # اگر همه چیز خالی بود
           if [ ! -s sub.txt ]; then
             echo "# No valid configs found" > sub.txt
           fi
           
-          echo "=== Total valid lines in sub.txt: $(wc -l < sub.txt) ==="
+          echo "Total valid lines: $(wc -l < sub.txt)"
 
-      - name: Convert to base64
+      - name: Convert to base64 and force update
         run: |
           base64 -w 0 sub.txt > subscribe.txt
+          date +"%Y-%m-%d %H:%M:%S UTC" > .last_update
 
       - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add subscribe.txt
-          if git diff --cached --quiet; then
-            echo "No changes"
-          else
-            git commit -m "Auto update subscription (filtered + sorted)"
-            git pull --rebase origin main
-            git push
-          fi
+          git add subscribe.txt .last_update
+          git commit -m "Auto update subscription ($(date +'%H:%M:%S'))" || echo "No changes"
+          git pull --rebase origin main
+          git push
