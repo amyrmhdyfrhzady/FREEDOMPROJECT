@@ -98,22 +98,16 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          
-          # حذف کامل فایل از دیسک و از track گیت
-          git rm -f subscribe.txt 2>/dev/null || true
-          rm -f subscribe.txt 2>/dev/null || true
-          
-          # ساختن دوباره فایل
+    
+          # ساخت subscribe.txt
           base64 -w 0 sub.txt > subscribe.txt
-          
-          # اضافه کردن اجباری
-          git add -f subscribe.txt
-          
-          # بررسی تغییرات و commit
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Auto update subscription $(date +'%Y-%m-%d %H:%M:%S')"
-            git pull --rebase origin main --no-edit || true
-            git push
-          fi
+          echo "$(date +'%Y-%m-%d %H:%M:%S UTC') - Cron triggered" > .timestamp
+        
+          git rm -f subscribe.txt .timestamp 2>/dev/null || true
+          git add -f subscribe.txt .timestamp
+    
+          # همیشه commit کن (حتی بدون تغییر محتوا)
+          git commit -m "Force update $(date +'%Y-%m-%d %H:%M:%S')" --allow-empty-message || echo "Commit failed"
+    
+          git pull --rebase origin main --no-edit || true
+          git push --force-with-lease
