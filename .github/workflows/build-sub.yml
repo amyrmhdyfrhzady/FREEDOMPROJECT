@@ -17,78 +17,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download multiple external sub files
+      - name: Download external sub files
         run: |
           mkdir -p configs
           urls=(
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub.tx"
             "https://vip.xoomail.us/sub/dGVzdDIzMzgyNjA3LDE3ODAwMzk4ODAXPu2XBMWvZ"
           )
           counter=1
           for url in "${urls[@]}"; do
-            filename="configs/external_${counter}.txt"
-            curl -sL "$url" -o "$filename"
-            echo "Downloaded $url -> $filename, lines: $(wc -l < "$filename")"
+            curl -sL "$url" -o "configs/external_${counter}.txt"
             ((counter++))
           done
-          
-          echo "=== DEBUG: Showing configs directory content ==="
-          ls -la configs/
 
-      - name: Merge and filter configs
+      - name: Merge and filter
         run: |
           > sub.txt
-          
           for f in configs/*.txt; do
-            if [[ ! "$f" =~ external_[0-9]+\.txt$ ]]; then
-              grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$f" >> sub.txt 2>/dev/null || true
-            fi
+            grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$f" >> sub.txt 2>/dev/null || true
           done
-          
-          for f in configs/external_*.txt; do
-            if [ -f "$f" ]; then
-              grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$f" >> sub.txt 2>/dev/null || true
-            fi
-          done
-          
-          if [ ! -s sub.txt ]; then
-            echo "# No valid configs found" > sub.txt
-          fi
-          
-          echo "=== DEBUG: Total valid lines in sub.txt: $(wc -l < sub.txt) ==="
-          echo "=== DEBUG: First 3 lines of sub.txt ==="
-          head -3 sub.txt
+          [ -s sub.txt ] || echo "# No valid configs" > sub.txt
 
-      - name: Convert to base64 and force update
-        run: |
-          base64 -w 0 sub.txt > subscribe.txt
-          echo "=== DEBUG: subscribe.txt size: $(wc -c < subscribe.txt) bytes ==="
-          date +"%Y-%m-%d %H:%M:%S UTC" > .last_update
-
-      - name: Check if subscribe.txt changed
-        run: |
-          # ذخیره نسخه قبلی برای مقایسه
-          if [ -f subscribe.txt ]; then
-            cp subscribe.txt subscribe_old.txt 2>/dev/null || true
-          fi
-
-      - name: Force commit and push
+      - name: Create and force commit subscribe.txt
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           
-          # نمایش تفاوت قبل و بعد
-          git status
+          # ساخت subscribe.txt
+          base64 -w 0 sub.txt > subscribe.txt
+          date > .last_update
           
-          git add subscribe.txt .last_update --force
+          # حذف و اضافه اجباری
+          git rm -f subscribe.txt .last_update 2>/dev/null || true
+          git add -f subscribe.txt .last_update
           
-          # نمایش تغییراتی که قرار است commit شوند
-          git diff --cached --stat
-          
-          git commit -m "Force update $(date +'%Y-%m-%d %H:%M:%S')" --allow-empty-message || echo "Commit failed"
-          
-          git pull --rebase origin main --no-edit || true
-          git push --force-with-lease
-          
-          echo "=== DEBUG: Push completed ==="
+          # کامیت و push
+          git commit -m "Update $(date +'%H:%M')" && git push -f || echo "No push needed"
