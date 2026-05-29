@@ -32,6 +32,9 @@ jobs:
             echo "Downloaded $url -> $filename, lines: $(wc -l < "$filename")"
             ((counter++))
           done
+          
+          echo "=== DEBUG: Showing configs directory content ==="
+          ls -la configs/
 
       - name: Merge and filter configs
         run: |
@@ -53,26 +56,39 @@ jobs:
             echo "# No valid configs found" > sub.txt
           fi
           
-          echo "Total valid lines: $(wc -l < sub.txt)"
+          echo "=== DEBUG: Total valid lines in sub.txt: $(wc -l < sub.txt) ==="
+          echo "=== DEBUG: First 3 lines of sub.txt ==="
+          head -3 sub.txt
 
       - name: Convert to base64 and force update
         run: |
           base64 -w 0 sub.txt > subscribe.txt
+          echo "=== DEBUG: subscribe.txt size: $(wc -c < subscribe.txt) bytes ==="
           date +"%Y-%m-%d %H:%M:%S UTC" > .last_update
 
-      - name: Commit and push (forced)
+      - name: Check if subscribe.txt changed
+        run: |
+          # ذخیره نسخه قبلی برای مقایسه
+          if [ -f subscribe.txt ]; then
+            cp subscribe.txt subscribe_old.txt 2>/dev/null || true
+          fi
+
+      - name: Force commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           
-          # حذف اجباری فایل قبلی از track
-          git rm --cached subscribe.txt .last_update 2>/dev/null || true
+          # نمایش تفاوت قبل و بعد
+          git status
           
-          # اضافه کردن دوباره
           git add subscribe.txt .last_update --force
           
-          # کامیت اجباری
-          git commit -m "Update subscription $(date +'%Y-%m-%d %H:%M:%S')" || echo "Nothing to commit"
+          # نمایش تغییراتی که قرار است commit شوند
+          git diff --cached --stat
+          
+          git commit -m "Force update $(date +'%Y-%m-%d %H:%M:%S')" --allow-empty-message || echo "Commit failed"
           
           git pull --rebase origin main --no-edit || true
           git push --force-with-lease
+          
+          echo "=== DEBUG: Push completed ==="
