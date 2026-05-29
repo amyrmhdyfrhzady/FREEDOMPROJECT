@@ -21,10 +21,10 @@ jobs:
         run: |
           mkdir -p configs
           urls=(
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
+            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt"
+            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub2.txt"
+            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub3.txt"
+            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub4.txt"
           )
           counter=1
           for url in "${urls[@]}"; do
