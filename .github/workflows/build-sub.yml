@@ -1,17 +1,21 @@
-name: Amirmahdihakerrrrr-freedom2
+name: Build Subscription
 
 on:
-  schedule:
-    - cron: '0 */5 * * *'
+  push:
+    branches: [ "main" ]
   workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
 
 jobs:
-  update:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # کل تاریخچه را دریافت کن
 
       - name: Download multiple external sub files
         run: |
