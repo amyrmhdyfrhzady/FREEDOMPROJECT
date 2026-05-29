@@ -25,6 +25,7 @@ jobs:
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
+            "https://vip.xoomail.us/sub/dGVzdDIzMzgyNjA3LDE3ODAwMzk4ODAXPu2XBMWvZ"
           )
           counter=1
           for url in "${urls[@]}"; do
