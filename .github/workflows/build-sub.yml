@@ -22,7 +22,7 @@ jobs:
           mkdir -p configs
           urls=(
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt"
-            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
+            "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub2.txt"
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Subx.txt"
             "https://vip.xoomail.us/sub/dGVzdDIzMzgyNjA3LDE3ODAwMzk4ODAXPu2XBMWvZ"
