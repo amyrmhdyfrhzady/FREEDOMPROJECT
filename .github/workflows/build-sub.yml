@@ -7,7 +7,7 @@ on:
   schedule:
     - cron: '*/10 * * * *'
 env:
-  MAX_LINES: 200
+  MAX_EXTERNAL: 550
 jobs:
   build:
     runs-on: ubuntu-latest
