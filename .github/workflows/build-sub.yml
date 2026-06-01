@@ -7,7 +7,7 @@ on:
   schedule:
     - cron: '*/10 * * * *'
 env:
-  MAX_EXTERNAL: 2061
+  MAX_EXTERNAL: 2500
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -126,6 +126,9 @@ jobs:
             "https://raw.githubusercontent.com/SANYIMOE/VPN-free/6e93041767a76c3104062551b003f29ea55f584e/conf/data.txt"
             "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Splitted-By-Protocol/ssr.txt"
             "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Splitted-By-Protocol/vmess.txt"
+            "https://raw.githubusercontent.com/hiddify/hiddify-app/refs/heads/main/test.configs/mahsa#lilsorin-@isor1n"
+            "https://raw.githubusercontent.com/hiddify/hiddify-app/refs/heads/main/test.configs/mahsa"
+            "https://raw.githubusercontent.com/iampedii/whitedns-sub/refs/heads/main/base64.txt"
           )
           counter=1
           for url in "${urls[@]}"; do
