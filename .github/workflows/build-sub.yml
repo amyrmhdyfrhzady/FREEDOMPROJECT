@@ -4,8 +4,8 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-  schedule:
-    - cron: '*/10 * * * *'
+
+
 env:
   MAX_EXTERNAL: 2500
 jobs:
