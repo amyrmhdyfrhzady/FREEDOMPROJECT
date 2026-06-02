@@ -22,6 +22,12 @@ jobs:
         run: |
           mkdir -p configs
           urls=(
+            "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mtn/sub_1.txt"
+            "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mtn/sub_2.txt"
+            "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mci/sub_1.txt"
+            "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mci/sub_2.txt"
+            "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/app/sub.txt"
+            "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/app/wireguard.txt"
             "https://raw.githubusercontent.com/masir-sefid/Sub/main/@Masir_Sefid.txt"
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt"
             "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub2.txt"
