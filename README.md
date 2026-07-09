@@ -47,7 +47,7 @@ Merge • Publish • Archive • Automate
 
 ---
 
-### 📢 Official Channels For Giving latest News and v2ray-configs IN Internet blackout
+### 📢 Official Channels For Giving lastest News and v2ray-configs IN Internet blackout
 
 - 💬 **Telegram Channel**
   - https://t.me/FREEDOMPROJECT
