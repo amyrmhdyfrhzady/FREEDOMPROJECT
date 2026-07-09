@@ -589,7 +589,7 @@ Subscription      Cloudflare       News Collector
 
 <p align="center">
 
-<img src="./assets/logo.png" width="120">
+<img src="./assets/logo.png">
 
 </p>
 
