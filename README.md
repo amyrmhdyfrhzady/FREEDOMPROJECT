@@ -804,16 +804,16 @@ Freedom Project
 
 </h2>
 
-<p align="center">
+<h4 align="center">
 
 A modern serverless ecosystem for Subscription aggregation, automated publishing and news archiving.
 
-</p>
+</h4>
 
-<p align="center">
+<h4 align="center">
 
 Made with ❤️ using
 
 GitHub Actions • Cloudflare Workers • Node.js • Playwright • Telegram Bot API • Bale Bot API
 
-</p>
+</h4>
