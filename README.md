@@ -617,7 +617,42 @@ Downloads **.sub** files and publishes them to a **Telegram** channel.
 ---
 
 ## v5.8.8
-- Update README.md File.
+- Build README.md File.
+
+---
+
+## 6.0.0
+### 🌐 filexpelorer
+
+**fileexpelorer** is a utility bot Builded for cutdown network that downloads content from user-provided URLs.
+
+Simply send a URL to the bot, and it will automatically detect whether the link points to an HTML page or a downloadable file. If the target is a web page, the bot downloads the HTML content. If the target is a file, it downloads the original file and sends it back to the user.
+
+#### ✨ Features
+
+- 🌍 Download HTML pages from any valid URL.
+- 📂 Download files while preserving their original format.
+- 🔍 Automatic content type detection.
+- 💬 User-friendly private chat interaction.
+- ⚡ Fast and reliable processing.
+
+#### 🔄 Workflow
+
+```text
+User
+  │
+  ▼
+Sends a URL
+  │
+  ▼
+fileexpelorer
+  │
+  ├── HTML Page → Download HTML
+  │
+  └── File → Download Original File
+  │
+  ▼
+Result Delivered to the User
 
 ---
 # 🗺 Roadmap
