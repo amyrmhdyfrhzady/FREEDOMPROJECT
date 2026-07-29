@@ -93,6 +93,9 @@ Merge • Publish • Archive • Automate
 - **Telegram News Downloader**
   - https://github.com/amyrmhdyfrhzady/telegram-news-mhtml
 
+- **instagram reels distributor**
+  - https://github.com/amyrmhdyfrhzady/instagram-reels-distributor
+  - 
 ---
 
 # 🌍 About
@@ -165,6 +168,20 @@ This project is maintained separately.
 Repository:
 
 https://github.com/amyrmhdyfrhzady/telegram-news-mhtml
+
+-
+
+## 🎥 instagram-reels-distributor
+
+Freedom Project also includes a dedicated News Collection project.
+
+Automatically monitors selected Instagram categories and Explore pages, extracts new Reels using Chromium and Playwright, downloads the videos, and delivers them directly to users who have started the bot.
+
+This project is maintained separately.
+
+Repository:
+
+https://github.com/amyrmhdyfrhzady/instagram-reels-distributor
 
 ---
 
@@ -369,6 +386,24 @@ Features
 - Playwright
 - GitHub Actions
 - Automatic MHTML Generation
+- Automatic Bale Publishing
+
+-
+
+## 🎥 instagram-reels-distributor
+
+A fully automated Instagram Reels distribution service that monitors Instagram categories, downloads new Reels using Playwright, and delivers them directly to registered bot users in Internet blackout for People's entertainment.
+
+Repository:
+
+https://github.com/amyrmhdyfrhzady/instagram-reels-distributor
+
+Features
+
+- Chromium
+- Playwright
+- GitHub Actions
+- Automatic Video sender and hologram Generation for videos
 - Automatic Bale Publishing
 
 ---
@@ -629,6 +664,17 @@ Downloads **.sub** files and publishes them to a **Telegram** channel.
 **fileexpelorer** is a utility bot Builded for cutdown network that downloads content from user-provided URLs.
 
 Simply send a URL to the bot, and it will automatically detect whether the link points to an HTML page or a downloadable file. If the target is a web page, the bot downloads the HTML content. If the target is a file, it downloads the original file and sends it back to the user.
+
+---
+
+# 🧨 Epic Update
+
+## 7.0.0
+## 🎥 instagram-reels-distributor
+
+Automatically monitors Instagram categories and Explore pages, downloads new Reels with Playwright, and delivers them directly to users who started the bot
+
+---
 
 #### ✨ Features
 
