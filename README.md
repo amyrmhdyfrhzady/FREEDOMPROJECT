@@ -32,7 +32,7 @@ Merge • Publish • Archive • Automate
 
 <img src="https://img.shields.io/badge/Playwright-Chromium-2EAD33?style=for-the-badge&logo=playwright&logoColor=white">
 
-<img src="https://img.shields.io/badge/Version-v6.0.0-blueviolet?style=for-the-badge">
+<img src="https://img.shields.io/badge/Version-v7.0.0-blueviolet?style=for-the-badge">
 
 </p>
 
