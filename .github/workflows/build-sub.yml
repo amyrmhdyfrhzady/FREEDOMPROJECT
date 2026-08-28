@@ -191,13 +191,56 @@ jobs:
           # ============================================
           # 2. فایل‌های خارجی (با محدودیت)
           # ============================================
-          echo "=== Collecting external configs ==="
+                    echo "=== Collecting external configs ==="
           > external_all.txt
+
+          CONFIG_REGEX='^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://'
+
           for f in configs/external_*.txt; do
-            if [ -f "$f" ]; then
-              grep -E "^(vmess|vless|trojan|ss|ssr|tuic|hysteria2|socks)://" "$f" >> external_all.txt 2>/dev/null || true
+            if [ ! -f "$f" ]; then
+              continue
             fi
+
+            echo "Processing $f"
+
+            # --------------------------------------------------
+            # 1. اول تلاش برای استخراج مستقیم کانفیگ‌ها
+            # --------------------------------------------------
+            direct_count=$(grep -E "$CONFIG_REGEX" "$f" 2>/dev/null | tee -a external_all.txt | wc -l)
+
+            if [ "$direct_count" -gt 0 ]; then
+              echo "  Direct configs found: $direct_count"
+              continue
+            fi
+
+            # --------------------------------------------------
+            # 2. اگر کانفیگ مستقیم پیدا نشد، فایل را Base64 فرض کن
+            # --------------------------------------------------
+            decoded_file=$(mktemp)
+
+            if base64 -d -i "$f" > "$decoded_file" 2>/dev/null; then
+
+              # ------------------------------------------------
+              # 3. استخراج کانفیگ‌ها از Base64 Decode شده
+              # ------------------------------------------------
+              decoded_count=$(grep -E "$CONFIG_REGEX" "$decoded_file" 2>/dev/null \
+                | tee -a external_all.txt \
+                | wc -l)
+
+              if [ "$decoded_count" -gt 0 ]; then
+                echo "  Base64 decoded configs found: $decoded_count"
+              else
+                echo "  No configs found after Base64 decoding"
+              fi
+
+            else
+              echo "  Not valid Base64"
+            fi
+
+            rm -f "$decoded_file"
           done
+
+          echo "Total external valid lines: $(wc -l < external_all.txt)"
           
           ext_total=$(wc -l < external_all.txt)
           echo "Total external valid lines: $ext_total"
