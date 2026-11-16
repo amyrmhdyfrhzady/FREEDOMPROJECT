@@ -1,4 +1,5 @@
 import base64
+import contextlib
 import importlib.util
 import io
 import json
@@ -207,6 +208,32 @@ class ParserTests(unittest.TestCase):
         record = freedom.parse_uri("ssr://" + base64.urlsafe_b64encode(b"127.0.0.1:8388:auth_sha1_v4:aes-128-ctr:plain:cA").decode().rstrip("="))
         result = freedom.run_test({**record, "id": "ssr-test"})
         self.assertEqual(result["status"], "unsupported")
+
+
+    def test_validation_logs_each_config_and_progress(self):
+        original_work = freedom.WORK
+        with tempfile.TemporaryDirectory() as temp:
+            freedom.WORK = Path(temp)
+            records = [
+                {"id": "config-one", "protocol": "vless", "source": "external_0001.txt"},
+                {"id": "config-two", "protocol": "trojan", "source": "personal.txt"},
+            ]
+            (freedom.WORK / "records.json").write_text(json.dumps({"personal": records[1:], "external": records[:1]}))
+            output = io.StringIO()
+            def fake_test(record, index=None, total=None):
+                freedom.log(f"[TEST START] {index}/{total} | {record['protocol']} | source={record['source']} | id={record['id']}")
+                freedom.log(f"[TEST RESULT] {index}/{total} | HEALTHY | latency=12 ms | reason=test success")
+                return {"id": record["id"], "status": "healthy", "latency_ms": 12, "reason": "test success"}
+            try:
+                with patch.object(freedom, "run_test", side_effect=fake_test), contextlib.redirect_stdout(output):
+                    freedom.validate()
+                logs = output.getvalue()
+                self.assertIn("Queue prepared: total=2, personal=1, external=1", logs)
+                self.assertIn("[TEST START] 1/2", logs)
+                self.assertIn("[TEST RESULT] 2/2 | HEALTHY", logs)
+                self.assertIn("completed=2/2", logs)
+            finally:
+                freedom.WORK = original_work
 
     def test_publish_caps_and_root_copy(self):
         original = (freedom.ROOT, freedom.WORK, freedom.OUTPUT, freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL)

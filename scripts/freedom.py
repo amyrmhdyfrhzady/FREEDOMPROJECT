@@ -4,6 +4,7 @@ import concurrent.futures
 import hashlib
 import json
 import os
+import threading
 import random
 import re
 import shutil
@@ -28,6 +29,12 @@ MAX_PER_PROTOCOL = max(0, int(os.getenv("MAX_PER_PROTOCOL", "100")))
 WORKERS = max(1, int(os.getenv("VALIDATION_WORKERS", "24")))
 TIMEOUT = max(2, int(os.getenv("VALIDATION_TIMEOUT", "8")))
 HISTORY_LIMIT = max(1, int(os.getenv("HISTORY_LIMIT", "30")))
+LOG_LOCK = threading.Lock()
+
+
+def log(message):
+    with LOG_LOCK:
+        print(message, flush=True)
 
 
 def read_sources():
@@ -298,6 +305,7 @@ def parse_all():
                 external.extend(extract_text(path.read_text(encoding="utf-8", errors="ignore"), path.name, False))
             except OSError:
                 continue
+    log(f"[PARSE] Extracted before deduplication: personal={len(personal)}, external={len(external)}, total={len(personal) + len(external)}")
     unique_personal, unique_external, raw_records, seen = [], [], [], set()
     for record in personal + external:
         try:
@@ -322,7 +330,14 @@ def parse_all():
     if not unique_personal and not unique_external:
         raise RuntimeError("no configurations were extracted; previous subscriptions were not changed")
     (WORK / "records.json").write_text(json.dumps({"personal": unique_personal, "external": unique_external, "all_sources": raw_records}, ensure_ascii=False), encoding="utf-8")
-    print(f"Personal: {len(unique_personal)}, external unique: {len(unique_external)}")
+    unique_total = len(unique_personal) + len(unique_external)
+    duplicate_total = len(raw_records) - unique_total
+    log(f"[PARSE] Ready for validation: personal={len(unique_personal)}, external={len(unique_external)}, total={unique_total}, duplicates_removed={duplicate_total}")
+    if unique_total:
+        by_protocol = {}
+        for item in unique_personal + unique_external:
+            by_protocol[item["protocol"]] = by_protocol.get(item["protocol"], 0) + 1
+        log("[PARSE] Protocol distribution: " + json.dumps(by_protocol, sort_keys=True))
 
 
 def free_port():
@@ -437,7 +452,7 @@ def singbox_config(record, port):
     return {"log": {"disabled": True}, "inbounds": [{"type": "socks", "tag": "in", "listen": "127.0.0.1", "listen_port": port}], "outbounds": [outbound]}
 
 
-def run_test(record):
+def _run_test(record):
     proto = record["protocol"]
     if proto == "ssr":
         return {"id": record["id"], "status": "unsupported", "latency_ms": None, "reason": "SSR core is not installed"}
@@ -476,7 +491,12 @@ def run_test(record):
         elapsed = round((time.monotonic() - start) * 1000)
         if curl.returncode == 0 and curl.stdout.strip() in ("204", "200", "301", "302"):
             return {"id": record["id"], "status": "healthy", "latency_ms": elapsed, "reason": "https probe succeeded"}
-        return {"id": record["id"], "status": "unhealthy", "latency_ms": elapsed, "reason": f"probe failed ({curl.returncode})"}
+        http_code = curl.stdout.strip() or "no HTTP response"
+        detail = (curl.stderr or "").strip().splitlines()[-1:]
+        reason = f"probe failed: curl_exit={curl.returncode}, http={http_code}"
+        if detail:
+            reason += f", detail={detail[0][:100]}"
+        return {"id": record["id"], "status": "unhealthy", "latency_ms": elapsed, "reason": reason[:160]}
     except subprocess.TimeoutExpired:
         return {"id": record["id"], "status": "unhealthy", "latency_ms": None, "reason": "probe timeout"}
     except Exception as exc:
@@ -494,25 +514,47 @@ def run_test(record):
         temp.cleanup()
 
 
+def run_test(record, index=None, total=None):
+    if index is not None and total is not None:
+        source = record.get("source", "unknown")
+        log(f"[TEST START] {index}/{total} | {record.get('protocol', 'unknown')} | source={source} | id={record.get('id', '')[:12]}")
+    result = _run_test(record)
+    if index is not None and total is not None:
+        latency = result.get("latency_ms")
+        latency_text = f"{latency} ms" if latency is not None else "n/a"
+        reason = result.get("reason", "")
+        log(f"[TEST RESULT] {index}/{total} | {result.get('status', 'unknown').upper()} | latency={latency_text} | reason={reason}")
+    return result
+
+
 def validate():
     data = json.loads((WORK / "records.json").read_text(encoding="utf-8"))
     records = data["personal"] + data["external"]
+    total = len(records)
+    personal_count = len(data["personal"])
+    external_count = len(data["external"])
     results = {}
+    log(f"[VALIDATION] Queue prepared: total={total}, personal={personal_count}, external={external_count}, workers={WORKERS}, timeout={TIMEOUT}s")
+    if not records:
+        raise RuntimeError("no configurations available for validation")
     with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        futures = {pool.submit(run_test, item): item for item in records}
+        futures = {pool.submit(run_test, item, index, total): item for index, item in enumerate(records, 1)}
         done = 0
+        counts = {"healthy": 0, "unhealthy": 0, "unsupported": 0, "unknown": 0}
         for future in concurrent.futures.as_completed(futures):
             item = futures[future]
             try:
                 result = future.result()
             except Exception as exc:
                 result = {"id": item["id"], "status": "unknown", "latency_ms": None, "reason": str(exc)[:160]}
+                log(f"[TEST RESULT] id={item['id'][:12]} | UNKNOWN | reason={result['reason']}")
             results[result["id"]] = result
+            status = result.get("status", "unknown")
+            counts[status] = counts.get(status, 0) + 1
             done += 1
-            if done % 100 == 0:
-                print(f"Validated {done}/{len(records)}")
+            log(f"[VALIDATION PROGRESS] completed={done}/{total} | healthy={counts['healthy']} unhealthy={counts['unhealthy']} unsupported={counts['unsupported']} unknown={counts['unknown']} | remaining={total-done}")
     (WORK / "validation.json").write_text(json.dumps(results, ensure_ascii=False), encoding="utf-8")
-    print(f"Validation complete: {len(results)}")
+    log(f"[VALIDATION COMPLETE] total={len(results)} | " + json.dumps(counts, sort_keys=True))
 
 
 def source_stats(records, validation):
