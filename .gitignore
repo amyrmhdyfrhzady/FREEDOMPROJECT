@@ -1,0 +1,5 @@
+.work/
+.stats.json.tmp
+__pycache__/
+.output-staging/
+.output-previous/
