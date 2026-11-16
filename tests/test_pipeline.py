@@ -34,6 +34,18 @@ class ParserTests(unittest.TestCase):
         item = freedom.parse_uri("vless://uuid@127.0.0.1:443?security=tls#node")
         self.assertEqual((item["host"], item["port"], item["protocol"]), ("127.0.0.1", 443, "vless"))
 
+    def test_invalid_ipv6_uri_is_ignored(self):
+        self.assertIsNone(freedom.parse_uri("vless://uuid@[2001:db8::1:443?security=tls#broken"))
+
+    def test_invalid_ipv6_does_not_stop_following_configs(self):
+        content = (
+            "vless://uuid@[2001:db8::1:443?security=tls#broken\n"
+            "vless://uuid@127.0.0.1:443?security=tls#valid\n"
+        )
+        records = freedom.extract_text(content, "fixture", False)
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["host"], "127.0.0.1")
+
     def test_shadowsocks_uri(self):
         auth = base64.urlsafe_b64encode(b"aes-128-gcm:password").decode().rstrip("=")
         item = freedom.parse_uri(f"ss://{auth}@127.0.0.1:8388#node")

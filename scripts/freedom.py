@@ -107,7 +107,13 @@ def parse_uri(uri):
     if not match:
         return None
     proto = match.group(1).lower()
-    parsed = urllib.parse.urlsplit(uri)
+    try:
+        parsed = urllib.parse.urlsplit(uri)
+        # Accessing hostname/port can also raise ValueError for malformed IPv6.
+        _ = parsed.hostname
+        _ = parsed.port
+    except ValueError:
+        return None
     if proto == "hy2":
         proto = "hysteria2"
     if proto == "socks5":
@@ -294,8 +300,11 @@ def parse_all():
                 continue
     unique_personal, unique_external, raw_records, seen = [], [], [], set()
     for record in personal + external:
-        parsed_uri = urllib.parse.urlsplit(record["uri"])
-        canonical = urllib.parse.urlunsplit((parsed_uri.scheme.lower(), parsed_uri.netloc, parsed_uri.path, "&".join(sorted(parsed_uri.query.split("&"))) if parsed_uri.query else "", ""))
+        try:
+            parsed_uri = urllib.parse.urlsplit(record["uri"])
+            canonical = urllib.parse.urlunsplit((parsed_uri.scheme.lower(), parsed_uri.netloc, parsed_uri.path, "&".join(sorted(parsed_uri.query.split("&"))) if parsed_uri.query else "", ""))
+        except ValueError:
+            continue
         if record["protocol"] == "vmess":
             payload = record["uri"].split("://", 1)[1].split("#", 1)[0]
             try:
