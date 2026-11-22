@@ -1,6 +1,6 @@
 {
   "project": "Freedom",
-  "last_updated": "2026-11-22T08:52:54.727298+00:00",
+  "last_updated": "2026-11-22T09:24:54.898645+00:00",
   "current": {
     "sources": {
       "total": 25,
@@ -11,12 +11,12 @@
       "discovered": 42536,
       "unique": 30488,
       "tested": 30377,
-      "healthy": 3087,
-      "unhealthy": 27290,
+      "healthy": 3116,
+      "unhealthy": 27261,
       "unsupported": 111,
       "unknown": 0,
-      "health_percentage": 10.13,
-      "tested_success_percentage": 10.16
+      "health_percentage": 10.22,
+      "tested_success_percentage": 10.26
     },
     "published": {
       "main": 500,
@@ -30,28 +30,28 @@
         "ssr": 0,
         "tuic": 0,
         "hysteria2": 100,
-        "socks": 39
+        "socks": 40
       }
     },
     "source_quality": {
       "external_0001.txt": {
         "configs": 508,
-        "healthy": 281,
-        "unhealthy": 227,
+        "healthy": 297,
+        "unhealthy": 211,
         "unsupported": 0,
         "unknown": 0,
-        "score": 55.31,
+        "score": 58.46,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/BlueKnightNet/blueknight_net-sub-link/refs/heads/blue-knight-net/BlueKnight.txt",
         "download_bytes": 155301
       },
       "external_0002.txt": {
         "configs": 42,
-        "healthy": 12,
-        "unhealthy": 30,
+        "healthy": 8,
+        "unhealthy": 34,
         "unsupported": 0,
         "unknown": 0,
-        "score": 28.57,
+        "score": 19.05,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/patterniha/Free-Configs/main/configs.txt",
         "download_bytes": 32921
@@ -80,33 +80,33 @@
       },
       "external_0005.txt": {
         "configs": 483,
-        "healthy": 140,
-        "unhealthy": 343,
+        "healthy": 146,
+        "unhealthy": 337,
         "unsupported": 0,
         "unknown": 0,
-        "score": 28.99,
+        "score": 30.23,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt",
         "download_bytes": 67816
       },
       "external_0006.txt": {
         "configs": 499,
-        "healthy": 337,
-        "unhealthy": 162,
+        "healthy": 330,
+        "unhealthy": 169,
         "unsupported": 0,
         "unknown": 0,
-        "score": 67.54,
+        "score": 66.13,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub2.txt",
         "download_bytes": 50979
       },
       "external_0007.txt": {
         "configs": 500,
-        "healthy": 401,
-        "unhealthy": 99,
+        "healthy": 392,
+        "unhealthy": 108,
         "unsupported": 0,
         "unknown": 0,
-        "score": 80.2,
+        "score": 78.4,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub3.txt",
         "download_bytes": 55106
@@ -124,44 +124,44 @@
       },
       "external_0009.txt": {
         "configs": 4488,
-        "healthy": 183,
-        "unhealthy": 4245,
+        "healthy": 178,
+        "unhealthy": 4250,
         "unsupported": 60,
         "unknown": 0,
-        "score": 4.13,
+        "score": 4.02,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mahdibland/ShadowsocksAggregator/master/sub/sub_merge.txt",
         "download_bytes": 1138301
       },
       "external_0010.txt": {
         "configs": 4488,
-        "healthy": 183,
-        "unhealthy": 4245,
+        "healthy": 178,
+        "unhealthy": 4250,
         "unsupported": 60,
         "unknown": 0,
-        "score": 4.13,
+        "score": 4.02,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt",
         "download_bytes": 1138301
       },
       "external_0011.txt": {
         "configs": 2213,
-        "healthy": 1030,
-        "unhealthy": 1183,
+        "healthy": 1029,
+        "unhealthy": 1184,
         "unsupported": 0,
         "unknown": 0,
-        "score": 46.54,
+        "score": 46.5,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/nodev2ray.txt",
         "download_bytes": 544412
       },
       "external_0012.txt": {
         "configs": 1836,
-        "healthy": 870,
-        "unhealthy": 966,
+        "healthy": 867,
+        "unhealthy": 969,
         "unsupported": 0,
         "unknown": 0,
-        "score": 47.39,
+        "score": 47.22,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/clashmeta.txt",
         "download_bytes": 453670
@@ -179,99 +179,99 @@
       },
       "external_0014.txt": {
         "configs": 498,
-        "healthy": 392,
-        "unhealthy": 106,
+        "healthy": 350,
+        "unhealthy": 148,
         "unsupported": 0,
         "unknown": 0,
-        "score": 78.71,
+        "score": 70.28,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub4.txt",
         "download_bytes": 99969
       },
       "external_0015.txt": {
         "configs": 14440,
-        "healthy": 1684,
-        "unhealthy": 12705,
+        "healthy": 1723,
+        "unhealthy": 12666,
         "unsupported": 51,
         "unknown": 0,
-        "score": 11.7,
+        "score": 11.97,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mheidari98/.proxy/main/all",
         "download_bytes": 5214224
       },
       "external_0016.txt": {
         "configs": 288,
-        "healthy": 107,
-        "unhealthy": 181,
+        "healthy": 114,
+        "unhealthy": 174,
         "unsupported": 0,
         "unknown": 0,
-        "score": 37.15,
+        "score": 39.58,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/clash.yml",
         "download_bytes": 159670
       },
       "external_0017.txt": {
         "configs": 29,
-        "healthy": 7,
-        "unhealthy": 22,
+        "healthy": 6,
+        "unhealthy": 23,
         "unsupported": 0,
         "unknown": 0,
-        "score": 24.14,
+        "score": 20.69,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/ermaozi01/free_clash_vpn/main/subscribe/clash.yml",
         "download_bytes": 26229
       },
       "external_0018.txt": {
         "configs": 5,
-        "healthy": 4,
-        "unhealthy": 1,
+        "healthy": 5,
+        "unhealthy": 0,
         "unsupported": 0,
         "unknown": 0,
-        "score": 80.0,
+        "score": 100.0,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/zhangkaiitugithub/passcro/main/speednodes.yaml",
         "download_bytes": 25010
       },
       "external_0019.txt": {
         "configs": 2123,
-        "healthy": 29,
-        "unhealthy": 2094,
+        "healthy": 35,
+        "unhealthy": 2088,
         "unsupported": 0,
         "unknown": 0,
-        "score": 1.37,
+        "score": 1.65,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/anaer/Sub/main/clash.yaml",
         "download_bytes": 608984
       },
       "external_0020.txt": {
         "configs": 1431,
-        "healthy": 513,
-        "unhealthy": 918,
+        "healthy": 528,
+        "unhealthy": 903,
         "unsupported": 0,
         "unknown": 0,
-        "score": 35.85,
+        "score": 36.9,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/nodev2ray.yaml",
         "download_bytes": 497873
       },
       "external_0021.txt": {
         "configs": 1383,
-        "healthy": 575,
-        "unhealthy": 808,
+        "healthy": 574,
+        "unhealthy": 809,
         "unsupported": 0,
         "unknown": 0,
-        "score": 41.58,
+        "score": 41.5,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/clashmeta.yaml",
         "download_bytes": 546314
       },
       "external_0022.txt": {
         "configs": 150,
-        "healthy": 46,
-        "unhealthy": 104,
+        "healthy": 35,
+        "unhealthy": 115,
         "unsupported": 0,
         "unknown": 0,
-        "score": 30.67,
+        "score": 23.33,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/vmess",
         "download_bytes": 52928
@@ -300,11 +300,11 @@
       },
       "external_0025.txt": {
         "configs": 171,
-        "healthy": 106,
-        "unhealthy": 65,
+        "healthy": 105,
+        "unhealthy": 66,
         "unsupported": 0,
         "unknown": 0,
-        "score": 61.99,
+        "score": 61.4,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/iampedii/whitedns-sub/refs/heads/main/base64.txt",
         "download_bytes": 64020
@@ -30803,17 +30803,6 @@
   },
   "history": [
     {
-      "date": "2026-11-22T08:28:26.601249+00:00",
-      "discovered": 42538,
-      "unique": 30490,
-      "healthy": 3274,
-      "unhealthy": 27105,
-      "unsupported": 111,
-      "published": 500,
-      "added": 3,
-      "removed": 2
-    },
-    {
       "date": "2026-11-22T08:52:54.723990+00:00",
       "discovered": 42536,
       "unique": 30488,
@@ -30823,6 +30812,17 @@
       "published": 500,
       "added": 0,
       "removed": 2
+    },
+    {
+      "date": "2026-11-22T09:24:54.896178+00:00",
+      "discovered": 42536,
+      "unique": 30488,
+      "healthy": 3116,
+      "unhealthy": 27261,
+      "unsupported": 111,
+      "published": 500,
+      "added": 0,
+      "removed": 0
     }
   ]
 }
