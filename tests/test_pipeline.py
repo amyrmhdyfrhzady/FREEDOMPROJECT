@@ -197,7 +197,7 @@ class ParserTests(unittest.TestCase):
                 return str(binary) if name == "sing-box" else original_which(name)
             def fake_run(args, *call_args, **kwargs):
                 if args and args[0] == "curl":
-                    return subprocess.CompletedProcess(args, 0, stdout="204", stderr="")
+                    return subprocess.CompletedProcess(args, 0, stdout="204|0.012|0.040", stderr="")
                 return original_run(args, *call_args, **kwargs)
             record = freedom.parse_uri("hysteria2://password@127.0.0.1:443?sni=example.com#node")
             with patch.object(freedom.shutil, "which", side_effect=fake_which), patch.object(freedom.subprocess, "run", side_effect=fake_run):
@@ -296,10 +296,10 @@ class ParserTests(unittest.TestCase):
             good = freedom.parse_uri("vless://good@127.0.0.1:443?security=tls#good")
             bad = freedom.parse_uri("vless://bad@127.0.0.1:444?security=tls#bad")
             records = [
-                {**good, "id": "good", "source": "external_0001.txt", "personal": False},
+                {**good, "id": "good", "source": "personal.txt", "personal": True},
                 {**bad, "id": "bad", "source": "external_0001.txt", "personal": False},
             ]
-            (work / "records.json").write_text(json.dumps({"personal": [], "external": records}))
+            (work / "records.json").write_text(json.dumps({"personal": records[:1], "external": records[1:]}))
             (work / "validation.json").write_text(json.dumps({
                 "good": {"status": "healthy", "latency_ms": 12, "response_ms": 35},
                 "bad": {"status": "unhealthy", "latency_ms": None},
