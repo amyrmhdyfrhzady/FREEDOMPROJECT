@@ -30,7 +30,7 @@ env:
   VALIDATION_WORKERS: 64
   VALIDATION_TIMEOUT: 7
   HISTORY_LIMIT: 2
-  REMOVE_ZERO_HEALTH_SOURCES: ${{ inputs.remove_zero_health_sources || false }}
+  REMOVE_ZERO_HEALTH_SOURCES: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.remove_zero_health_sources == 'true' }}
   XRAY_VERSION: latest
   SING_BOX_VERSION: latest
 
@@ -62,9 +62,9 @@ jobs:
         run: bash scripts/install-cores.sh
 
       - name: Add optional subscription source
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_url != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_url != '' }}
         env:
-          SOURCE_URL: ${{ inputs.source_url }}
+          SOURCE_URL: ${{ github.event.inputs.source_url }}
         run: |
           python - <<'PY'
           import os, pathlib, urllib.parse
