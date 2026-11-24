@@ -259,7 +259,8 @@ class ParserTests(unittest.TestCase):
             freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = 2, 1
             freedom.publish()
             main_data = base64.b64decode((output / "subscribe.txt").read_bytes()).decode().splitlines()
-            self.assertEqual(len(main_data), 2)\n            self.assertEqual(main_data, [records[2]["uri"], records[3]["uri"]])
+            self.assertEqual(len(main_data), 2)
+            self.assertEqual(main_data, [records[2]["uri"], records[3]["uri"]])
             self.assertEqual((root / "subscribe.txt").read_bytes(), (output / "subscribe.txt").read_bytes())
             proto_data = base64.b64decode((output / "subscribe-vless.txt").read_bytes()).decode().splitlines()
             self.assertEqual(len(proto_data), 1)
