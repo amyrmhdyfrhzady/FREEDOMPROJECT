@@ -332,7 +332,7 @@ class ParserTests(unittest.TestCase):
             source_file = configs / "external-sources.list"
             dead = "https://example.test/dead"
             alive = "https://example.test/alive"
-            source_file.write_text(dead + "\\n" + alive + "\\n", encoding="utf-8")
+            source_file.write_text(dead + "\n" + alive + "\n", encoding="utf-8")
             download_status = [
                 {"url": dead, "status": "success", "bytes": 10},
                 {"url": alive, "status": "success", "bytes": 20},
