@@ -621,9 +621,9 @@ def source_stats(records, validation):
 
 
 def _write_b64(path, items):
-    raw = "\\n".join(item["uri"] for item in items)
+    raw = "\n".join(item["uri"] for item in items)
     if raw:
-        raw += "\\n"
+        raw += "\n"
     path.write_bytes(base64.b64encode(raw.encode("utf-8")))
 
 
@@ -649,7 +649,7 @@ def _prune_zero_health_sources(download_status, quality):
         else:
             kept.append(raw)
     if removed:
-        source_path.write_text("\\n".join(kept).rstrip() + "\\n", encoding="utf-8")
+        source_path.write_text("\n".join(kept).rstrip() + "\n", encoding="utf-8")
     return sorted(set(removed))
 
 def publish():
@@ -700,6 +700,11 @@ def publish():
     except Exception:
         old = {}
     history = old.get("history", [])
+    for snapshot in history:
+        if isinstance(snapshot, dict):
+            snapshot.pop("added", None)
+            snapshot.pop("removed", None)
+    old.get("current", {}).pop("fingerprints", None)
     quality = source_stats(raw_records, validation)
     for index, entry in enumerate(download_status, 1):
         source = f"external_{index:04d}.txt"
@@ -780,7 +785,7 @@ def publish():
     shutil.copyfile(OUTPUT / "subscribe.txt", ROOT / "subscribe.txt")
     temp_stats.replace(old_stats_path)
     (ROOT / ".timestamp").write_text(
-        datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC") + " - Subscription updated\\n",
+        datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC") + " - Subscription updated\n",
         encoding="utf-8",
     )
     removed = _prune_zero_health_sources(download_status, quality)
