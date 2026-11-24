@@ -487,7 +487,7 @@ def _run_test(record):
                 time.sleep(0.05)
         if not ready:
             return {"id": record["id"], "status": "unhealthy", "latency_ms": None, "reason": "core failed to start"}
-        curl = subprocess.run(["curl", "--silent", "--show-error", "--output", "/dev/null", "--write-out", "%{http_code}|%{time_connect}|%{time_total}", "--max-time", str(TIMEOUT), "--proxy", f"socks5h://127.0.0.1:{port}", "https://www.gstatic.com/generate_204"], capture_output=True, text=True, timeout=TIMEOUT + 2)
+        curl = subprocess.run(["curl", "--silent", "--show-error", "--output", "/dev/null", "--write-out", "%{http_code}|%{time_starttransfer}|%{time_total}", "--max-time", str(TIMEOUT), "--proxy", f"socks5h://127.0.0.1:{port}", "https://www.gstatic.com/generate_204"], capture_output=True, text=True, timeout=TIMEOUT + 2)
         parts = curl.stdout.strip().split("|")
         http_code = parts[0] if parts else ""
         try:
