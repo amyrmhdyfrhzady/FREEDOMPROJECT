@@ -665,7 +665,7 @@ def publish():
     )
     healthy_personal = [item for item in healthy if item.get("personal")]
     healthy_external = [item for item in healthy if not item.get("personal")]
-    main_records = healthy_personal + healthy_external[:MAX_EXTERNAL]
+    main_records = healthy[:MAX_EXTERNAL]
     status_records = {
         status: _sort_records(
             [item for item in all_records if validation.get(item["id"], {}).get("status", "unknown") == status],
@@ -741,7 +741,7 @@ def publish():
             "tested_success_percentage": round(counts["healthy"] / tested * 100, 2) if tested else 0,
         },
         "published": {
-            "main": len(main_records), "external_limit": MAX_EXTERNAL,
+            "main": len(main_records), "main_limit": MAX_EXTERNAL,
             "per_protocol_limit": MAX_PER_PROTOCOL,
             "by_protocol": {key: len(value) for key, value in proto_files.items()},
         },
@@ -791,7 +791,7 @@ def publish():
     removed = _prune_zero_health_sources(download_status, quality)
     if removed:
         log(f"[SOURCE CLEANUP] Removed {len(removed)} zero-healthy sources from external-sources.list")
-    print(f"Main published: {len(main_records)} (personal {len(healthy_personal)}, external {len(main_records) - len(healthy_personal)})")
+    print(f"Main published: {len(main_records)} (limit {MAX_EXTERNAL})")
     print("Per-protocol: " + json.dumps({key: len(value) for key, value in proto_files.items()}))
     print("Status files: " + json.dumps({key: len(value) for key, value in status_records.items()}))
 
