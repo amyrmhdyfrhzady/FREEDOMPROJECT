@@ -325,5 +325,33 @@ class ParserTests(unittest.TestCase):
         freedom.ROOT, freedom.WORK, freedom.OUTPUT, freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = original
 
 
+    def test_zero_health_sources_are_removed_only_when_enabled(self):
+        original_configs = freedom.CONFIGS
+        with tempfile.TemporaryDirectory() as temp:
+            configs = Path(temp)
+            source_file = configs / "external-sources.list"
+            dead = "https://example.test/dead"
+            alive = "https://example.test/alive"
+            source_file.write_text(dead + "\\n" + alive + "\\n", encoding="utf-8")
+            download_status = [
+                {"url": dead, "status": "success", "bytes": 10},
+                {"url": alive, "status": "success", "bytes": 20},
+            ]
+            quality = {
+                "external_0001.txt": {"healthy": 0},
+                "external_0002.txt": {"healthy": 3},
+            }
+            freedom.CONFIGS = configs
+            try:
+                with patch.dict(os.environ, {"REMOVE_ZERO_HEALTH_SOURCES": "false"}):
+                    self.assertEqual(freedom._prune_zero_health_sources(download_status, quality), [])
+                with patch.dict(os.environ, {"REMOVE_ZERO_HEALTH_SOURCES": "true"}):
+                    removed = freedom._prune_zero_health_sources(download_status, quality)
+                self.assertEqual(removed, [dead])
+                self.assertEqual(source_file.read_text(encoding="utf-8").splitlines(), [alive])
+            finally:
+                freedom.CONFIGS = original_configs
+
+
 if __name__ == "__main__":
     unittest.main()
