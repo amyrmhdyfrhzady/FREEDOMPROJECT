@@ -179,7 +179,7 @@ class ParserTests(unittest.TestCase):
                 return str(binary) if name == "xray" else original_which(name)
             def fake_run(args, *call_args, **kwargs):
                 if args and args[0] == "curl":
-                    return subprocess.CompletedProcess(args, 0, stdout="204", stderr="")
+                    return subprocess.CompletedProcess(args, 0, stdout="204|0.010|0.040", stderr="")
                 return original_run(args, *call_args, **kwargs)
             record = freedom.parse_uri("vless://uuid@127.0.0.1:443?security=tls#node")
             with patch.object(freedom.shutil, "which", side_effect=fake_which), patch.object(freedom.subprocess, "run", side_effect=fake_run):
@@ -262,6 +262,58 @@ class ParserTests(unittest.TestCase):
             self.assertEqual(stats["current"]["configs"]["unique"], 4)
             self.assertEqual(stats["current"]["published"]["main"], 3)
             self.assertEqual(len(stats["history"]), 1)
+        freedom.ROOT, freedom.WORK, freedom.OUTPUT, freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = original
+
+    def test_sort_records_prioritizes_connection_latency(self):
+        records = [{"id": "slow"}, {"id": "fast"}, {"id": "middle"}]
+        validation = {
+            "slow": {"latency_ms": 90, "response_ms": 120},
+            "fast": {"latency_ms": 15, "response_ms": 80},
+            "middle": {"latency_ms": 35, "response_ms": 45},
+        }
+        self.assertEqual([x["id"] for x in freedom._sort_records(records, validation)], ["fast", "middle", "slow"])
+
+    def test_source_stats_ranks_sources(self):
+        records = [
+            {"id": "a1", "source": "a"}, {"id": "a2", "source": "a"},
+            {"id": "b1", "source": "b"},
+        ]
+        validation = {
+            "a1": {"status": "healthy", "latency_ms": 40},
+            "a2": {"status": "unhealthy"},
+            "b1": {"status": "healthy", "latency_ms": 15},
+        }
+        stats = freedom.source_stats(records, validation)
+        self.assertEqual(stats["b"]["rank"], 1)
+        self.assertEqual(stats["a"]["rank"], 2)
+
+    def test_publish_separates_status_and_omits_fingerprints(self):
+        original = (freedom.ROOT, freedom.WORK, freedom.OUTPUT, freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL)
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            work, output = root / ".work", root / "output"
+            work.mkdir()
+            good = freedom.parse_uri("vless://good@127.0.0.1:443?security=tls#good")
+            bad = freedom.parse_uri("vless://bad@127.0.0.1:444?security=tls#bad")
+            records = [
+                {**good, "id": "good", "source": "external_0001.txt", "personal": False},
+                {**bad, "id": "bad", "source": "external_0001.txt", "personal": False},
+            ]
+            (work / "records.json").write_text(json.dumps({"personal": [], "external": records}))
+            (work / "validation.json").write_text(json.dumps({
+                "good": {"status": "healthy", "latency_ms": 12, "response_ms": 35},
+                "bad": {"status": "unhealthy", "latency_ms": None},
+            }))
+            (work / "download_status.json").write_text(json.dumps([{"url": "https://example.test/sub", "status": "success", "bytes": 20}]))
+            freedom.ROOT, freedom.WORK, freedom.OUTPUT = root, work, output
+            freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = 500, 100
+            freedom.publish()
+            self.assertEqual(len(base64.b64decode((output / "healthy.txt").read_bytes()).decode().splitlines()), 1)
+            self.assertEqual(len(base64.b64decode((output / "unhealthy.txt").read_bytes()).decode().splitlines()), 1)
+            stats = json.loads((root / "stats.json").read_text())
+            self.assertNotIn("fingerprints", stats["current"])
+            self.assertNotIn("added", stats["history"][-1])
+            self.assertEqual(stats["current"]["zero_output_sources"][0]["url"], "https://example.test/sub")
         freedom.ROOT, freedom.WORK, freedom.OUTPUT, freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = original
 
 

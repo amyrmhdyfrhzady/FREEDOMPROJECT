@@ -487,11 +487,18 @@ def _run_test(record):
                 time.sleep(0.05)
         if not ready:
             return {"id": record["id"], "status": "unhealthy", "latency_ms": None, "reason": "core failed to start"}
-        curl = subprocess.run(["curl", "--silent", "--show-error", "--output", "/dev/null", "--write-out", "%{http_code}", "--max-time", str(TIMEOUT), "--proxy", f"socks5h://127.0.0.1:{port}", "https://www.gstatic.com/generate_204"], capture_output=True, text=True, timeout=TIMEOUT + 2)
+        curl = subprocess.run(["curl", "--silent", "--show-error", "--output", "/dev/null", "--write-out", "%{http_code}|%{time_connect}|%{time_total}", "--max-time", str(TIMEOUT), "--proxy", f"socks5h://127.0.0.1:{port}", "https://www.gstatic.com/generate_204"], capture_output=True, text=True, timeout=TIMEOUT + 2)
+        parts = curl.stdout.strip().split("|")
+        http_code = parts[0] if parts else ""
+        try:
+            latency_ms = round(float(parts[1]) * 1000) if len(parts) > 1 else None
+            response_ms = round(float(parts[2]) * 1000) if len(parts) > 2 else None
+        except (TypeError, ValueError):
+            latency_ms, response_ms = None, None
+        if curl.returncode == 0 and http_code in ("204", "200", "301", "302"):
+            return {"id": record["id"], "status": "healthy", "latency_ms": latency_ms, "response_ms": response_ms, "reason": "https probe succeeded"}
         elapsed = round((time.monotonic() - start) * 1000)
-        if curl.returncode == 0 and curl.stdout.strip() in ("204", "200", "301", "302"):
-            return {"id": record["id"], "status": "healthy", "latency_ms": elapsed, "reason": "https probe succeeded"}
-        http_code = curl.stdout.strip() or "no HTTP response"
+        http_code = http_code or "no HTTP response"
         detail = (curl.stderr or "").strip().splitlines()[-1:]
         reason = f"probe failed: curl_exit={curl.returncode}, http={http_code}"
         if detail:
@@ -557,88 +564,206 @@ def validate():
     log(f"[VALIDATION COMPLETE] total={len(results)} | " + json.dumps(counts, sort_keys=True))
 
 
+def _config_sort_key(record, validation):
+    result = validation.get(record["id"], {})
+    latency = result.get("latency_ms")
+    response = result.get("response_ms")
+    return (
+        latency is None,
+        latency if latency is not None else float("inf"),
+        response is None,
+        response if response is not None else float("inf"),
+        record.get("protocol", ""),
+        record.get("id", ""),
+    )
+
+
+def _sort_records(records, validation):
+    return sorted(records, key=lambda item: _config_sort_key(item, validation))
+
+
 def source_stats(records, validation):
     stats = {}
     for record in records:
-        source = record["source"]
-        item = stats.setdefault(source, {"configs": 0, "healthy": 0, "unhealthy": 0, "unsupported": 0, "unknown": 0})
+        source = record.get("source", "unknown")
+        item = stats.setdefault(source, {
+            "configs": 0, "healthy": 0, "unhealthy": 0,
+            "unsupported": 0, "unknown": 0, "_latencies": [],
+            "_responses": [],
+        })
         item["configs"] += 1
-        status = validation.get(record["id"], {}).get("status", "unknown")
+        result = validation.get(record["id"], {})
+        status = result.get("status", "unknown")
         if status in ("healthy", "unhealthy", "unsupported", "unknown"):
             item[status] += 1
-    for source, item in stats.items():
+        if status == "healthy":
+            if isinstance(result.get("latency_ms"), (int, float)):
+                item["_latencies"].append(result["latency_ms"])
+            if isinstance(result.get("response_ms"), (int, float)):
+                item["_responses"].append(result["response_ms"])
+    for item in stats.values():
         tested = item["healthy"] + item["unhealthy"]
         item["score"] = round(item["healthy"] / tested * 100, 2) if tested else 0
+        item["average_latency_ms"] = round(sum(item["_latencies"]) / len(item["_latencies"]), 2) if item["_latencies"] else None
+        item["average_response_ms"] = round(sum(item["_responses"]) / len(item["_responses"]), 2) if item["_responses"] else None
+        del item["_latencies"]
+        del item["_responses"]
+    ranked = sorted(stats.items(), key=lambda pair: (
+        -pair[1]["score"],
+        pair[1]["average_latency_ms"] is None,
+        pair[1]["average_latency_ms"] if pair[1]["average_latency_ms"] is not None else float("inf"),
+        -pair[1]["healthy"],
+        pair[0],
+    ))
+    for rank, (_, item) in enumerate(ranked, 1):
+        item["rank"] = rank
     return stats
 
+
+def _write_b64(path, items):
+    raw = "\\n".join(item["uri"] for item in items)
+    if raw:
+        raw += "\\n"
+    path.write_bytes(base64.b64encode(raw.encode("utf-8")))
+
+
+def _prune_zero_health_sources(download_status, quality):
+    if os.getenv("REMOVE_ZERO_HEALTH_SOURCES", "false").lower() not in ("1", "true", "yes", "on"):
+        return []
+    source_path = CONFIGS / "external-sources.list"
+    if not source_path.exists():
+        return []
+    remove_urls = {
+        entry.get("url")
+        for index, entry in enumerate(download_status, 1)
+        if entry.get("status") == "success"
+        and quality.get(f"external_{index:04d}.txt", {}).get("healthy", 0) == 0
+        and entry.get("url")
+    }
+    if not remove_urls:
+        return []
+    kept, removed = [], []
+    for raw in source_path.read_text(encoding="utf-8-sig").splitlines():
+        if raw.strip() in remove_urls:
+            removed.append(raw.strip())
+        else:
+            kept.append(raw)
+    if removed:
+        source_path.write_text("\\n".join(kept).rstrip() + "\\n", encoding="utf-8")
+    return sorted(set(removed))
 
 def publish():
     data = json.loads((WORK / "records.json").read_text(encoding="utf-8"))
     validation = json.loads((WORK / "validation.json").read_text(encoding="utf-8"))
-    personal = data["personal"]
-    external = data["external"]
+    personal, external = data["personal"], data["external"]
     all_records = personal + external
     raw_records = data.get("all_sources", all_records)
-    healthy_personal = [x for x in personal if validation.get(x["id"], {}).get("status") == "healthy"]
-    healthy_external = [x for x in external if validation.get(x["id"], {}).get("status") == "healthy"]
-    random.SystemRandom().shuffle(healthy_external)
+
+    healthy = _sort_records(
+        [item for item in all_records if validation.get(item["id"], {}).get("status") == "healthy"],
+        validation,
+    )
+    healthy_personal = [item for item in healthy if item.get("personal")]
+    healthy_external = [item for item in healthy if not item.get("personal")]
     main_records = healthy_personal + healthy_external[:MAX_EXTERNAL]
-    OUTPUT.parent.mkdir(exist_ok=True)
+    status_records = {
+        status: _sort_records(
+            [item for item in all_records if validation.get(item["id"], {}).get("status", "unknown") == status],
+            validation,
+        )
+        for status in ("healthy", "unhealthy", "unsupported", "unknown")
+    }
+
     stage_output = ROOT / ".output-staging"
     if stage_output.exists():
         shutil.rmtree(stage_output)
     stage_output.mkdir()
+    _write_b64(stage_output / "subscribe.txt", main_records)
+    for status, items in status_records.items():
+        _write_b64(stage_output / f"{status}.txt", items)
     proto_files = {}
     for proto in PROTO:
-        personal_proto = [x for x in healthy_personal if x["protocol"] == proto]
-        external_proto = [x for x in healthy_external if x["protocol"] == proto]
-        random.SystemRandom().shuffle(external_proto)
-        proto_files[proto] = (personal_proto + external_proto)[:MAX_PER_PROTOCOL]
-    def write_b64(path, items):
-        raw = "\n".join(x["uri"] for x in items)
-        if raw:
-            raw += "\n"
-        path.write_bytes(base64.b64encode(raw.encode("utf-8")))
-    write_b64(stage_output / "subscribe.txt", main_records)
-    for proto, items in proto_files.items():
-        write_b64(stage_output / f"subscribe-{proto}.txt", items)
+        candidates = [item for item in healthy if item.get("protocol") == proto]
+        proto_files[proto] = candidates[:MAX_PER_PROTOCOL]
+        _write_b64(stage_output / f"subscribe-{proto}.txt", proto_files[proto])
+
     if all_records and not main_records:
         shutil.rmtree(stage_output)
         raise RuntimeError("no healthy configurations were found; previous subscriptions were not changed")
+
     download_status = json.loads((WORK / "download_status.json").read_text(encoding="utf-8")) if (WORK / "download_status.json").exists() else []
-    counts = {status: sum(v.get("status") == status for v in validation.values()) for status in ("healthy", "unhealthy", "unsupported", "unknown")}
+    counts = {status: len(items) for status, items in status_records.items()}
     tested = counts["healthy"] + counts["unhealthy"]
     old_stats_path = ROOT / "stats.json"
-    old = {}
-    if old_stats_path.exists():
-        try:
-            old = json.loads(old_stats_path.read_text(encoding="utf-8"))
-        except Exception:
-            old = {}
+    try:
+        old = json.loads(old_stats_path.read_text(encoding="utf-8")) if old_stats_path.exists() else {}
+    except Exception:
+        old = {}
     history = old.get("history", [])
+    quality = source_stats(raw_records, validation)
+    for index, entry in enumerate(download_status, 1):
+        source = f"external_{index:04d}.txt"
+        quality.setdefault(source, {
+            "configs": 0, "healthy": 0, "unhealthy": 0, "unsupported": 0,
+            "unknown": 0, "score": 0, "average_latency_ms": None,
+            "average_response_ms": None,
+        })
+        quality[source].update(download_status=entry["status"], url=entry["url"], download_bytes=entry["bytes"])
+        if entry.get("error"):
+            quality[source]["download_error"] = entry["error"]
+
+    ranked_sources = sorted(quality.items(), key=lambda pair: (
+        pair[1].get("rank", 10**9), pair[0]
+    ))
+    zero_output_sources = [
+        {"source": source, "url": item.get("url"), "download_status": item.get("download_status", "unknown"),
+         "configs": item.get("configs", 0), "healthy": item.get("healthy", 0)}
+        for source, item in quality.items()
+        if source.startswith("external_") and item.get("healthy", 0) == 0
+    ]
     current = {
-        "sources": {"total": len(download_status), "successful": sum(x["status"] == "success" for x in download_status), "failed": sum(x["status"] != "success" for x in download_status)},
-        "configs": {"discovered": len(raw_records), "unique": len(all_records), "tested": tested, "healthy": counts["healthy"], "unhealthy": counts["unhealthy"], "unsupported": counts["unsupported"], "unknown": counts["unknown"], "health_percentage": round(counts["healthy"] / len(all_records) * 100, 2) if all_records else 0, "tested_success_percentage": round(counts["healthy"] / tested * 100, 2) if tested else 0},
-        "published": {"main": len(main_records), "external_limit": MAX_EXTERNAL, "per_protocol_limit": MAX_PER_PROTOCOL, "by_protocol": {p: len(v) for p, v in proto_files.items()}},
-        "source_quality": source_stats(raw_records, validation)
+        "sources": {
+            "total": len(download_status),
+            "successful": sum(x["status"] == "success" for x in download_status),
+            "failed": sum(x["status"] != "success" for x in download_status),
+            "zero_healthy": len(zero_output_sources),
+        },
+        "configs": {
+            "discovered": len(raw_records), "unique": len(all_records), "tested": tested,
+            "healthy": counts["healthy"], "unhealthy": counts["unhealthy"],
+            "unsupported": counts["unsupported"], "unknown": counts["unknown"],
+            "health_percentage": round(counts["healthy"] / len(all_records) * 100, 2) if all_records else 0,
+            "tested_success_percentage": round(counts["healthy"] / tested * 100, 2) if tested else 0,
+        },
+        "published": {
+            "main": len(main_records), "external_limit": MAX_EXTERNAL,
+            "per_protocol_limit": MAX_PER_PROTOCOL,
+            "by_protocol": {key: len(value) for key, value in proto_files.items()},
+        },
+        "source_quality": quality,
+        "ranked_sources": [
+            {"rank": item.get("rank"), "source": source, "url": item.get("url"),
+             "score": item.get("score", 0), "healthy": item.get("healthy", 0),
+             "average_latency_ms": item.get("average_latency_ms")}
+            for source, item in ranked_sources
+        ],
+        "zero_output_sources": zero_output_sources,
     }
-    for index, source_status in enumerate(download_status, 1):
-        source_name = f"external_{index:04d}.txt"
-        if source_name not in current["source_quality"]:
-            current["source_quality"][source_name] = {"configs": 0, "healthy": 0, "unhealthy": 0, "unsupported": 0, "unknown": 0, "score": 0}
-        current["source_quality"][source_name]["download_status"] = source_status["status"]
-        current["source_quality"][source_name]["url"] = source_status["url"]
-        current["source_quality"][source_name]["download_bytes"] = source_status["bytes"]
-        if source_status.get("error"):
-            current["source_quality"][source_name]["download_error"] = source_status["error"]
-    old_fingerprints = set(old.get("current", {}).get("fingerprints", []))
-    new_fingerprints = {item["id"] for item in all_records}
-    current["fingerprints"] = sorted(new_fingerprints)
-    snapshot = {"date": datetime.now(timezone.utc).isoformat(), "discovered": len(raw_records), "unique": len(all_records), "healthy": counts["healthy"], "unhealthy": counts["unhealthy"], "unsupported": counts["unsupported"], "published": len(main_records), "added": len(new_fingerprints - old_fingerprints), "removed": len(old_fingerprints - new_fingerprints)}
-    history.append(snapshot)
-    stats = {"project": "Freedom", "last_updated": datetime.now(timezone.utc).isoformat(), "current": current, "history": history[-HISTORY_LIMIT:]}
+    (WORK / "ranked-records.json").write_text(json.dumps(status_records, ensure_ascii=False), encoding="utf-8")
+    history.append({
+        "date": datetime.now(timezone.utc).isoformat(),
+        "discovered": len(raw_records), "unique": len(all_records),
+        "healthy": counts["healthy"], "unhealthy": counts["unhealthy"],
+        "unsupported": counts["unsupported"], "unknown": counts["unknown"],
+        "published": len(main_records),
+    })
+    stats = {
+        "project": "Freedom", "last_updated": datetime.now(timezone.utc).isoformat(),
+        "current": current, "history": history[-HISTORY_LIMIT:],
+    }
     temp_stats = ROOT / ".stats.json.tmp"
     temp_stats.write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
+
     backup_output = ROOT / ".output-previous"
     if backup_output.exists():
         shutil.rmtree(backup_output)
@@ -654,10 +779,16 @@ def publish():
         shutil.rmtree(backup_output)
     shutil.copyfile(OUTPUT / "subscribe.txt", ROOT / "subscribe.txt")
     temp_stats.replace(old_stats_path)
-    (ROOT / ".timestamp").write_text(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC") + " - Subscription updated\n", encoding="utf-8")
+    (ROOT / ".timestamp").write_text(
+        datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC") + " - Subscription updated\\n",
+        encoding="utf-8",
+    )
+    removed = _prune_zero_health_sources(download_status, quality)
+    if removed:
+        log(f"[SOURCE CLEANUP] Removed {len(removed)} zero-healthy sources from external-sources.list")
     print(f"Main published: {len(main_records)} (personal {len(healthy_personal)}, external {len(main_records) - len(healthy_personal)})")
-    print("Per-protocol: " + json.dumps({p: len(v) for p, v in proto_files.items()}))
-
+    print("Per-protocol: " + json.dumps({key: len(value) for key, value in proto_files.items()}))
+    print("Status files: " + json.dumps({key: len(value) for key, value in status_records.items()}))
 
 def main():
     parser = argparse.ArgumentParser()

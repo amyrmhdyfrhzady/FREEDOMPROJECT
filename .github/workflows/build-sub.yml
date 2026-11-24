@@ -9,6 +9,16 @@ on:
       - "stats.json"
       - "output/**"
   workflow_dispatch:
+    inputs:
+      source_url:
+        description: 'Optional HTTP(S) subscription URL to add before this build'
+        required: false
+        type: string
+      remove_zero_health_sources:
+        description: 'Remove downloaded sources with zero healthy configs'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: freedom-subscription-build
@@ -20,6 +30,7 @@ env:
   VALIDATION_WORKERS: 64
   VALIDATION_TIMEOUT: 7
   HISTORY_LIMIT: 2
+  REMOVE_ZERO_HEALTH_SOURCES: ${{ inputs.remove_zero_health_sources || false }}
   XRAY_VERSION: latest
   SING_BOX_VERSION: latest
 
@@ -50,6 +61,27 @@ jobs:
       - name: Install proxy cores
         run: bash scripts/install-cores.sh
 
+      - name: Add optional subscription source
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.source_url != '' }}
+        env:
+          SOURCE_URL: ${{ inputs.source_url }}
+        run: |
+          python - <<'PY'
+          import os, pathlib, urllib.parse
+          value = os.environ.get('SOURCE_URL', '').strip()
+          parsed = urllib.parse.urlparse(value)
+          if parsed.scheme not in ('http', 'https') or not parsed.netloc:
+              raise SystemExit('SOURCE_URL must be a valid HTTP(S) URL')
+          path = pathlib.Path('configs/external-sources.list')
+          lines = path.read_text(encoding='utf-8-sig').splitlines() if path.exists() else []
+          if value not in [line.strip() for line in lines]:
+              lines.append(value)
+              path.write_text('\\n'.join(lines).rstrip() + '\\n', encoding='utf-8')
+              print('Subscription source added')
+          else:
+              print('Subscription source already exists')
+          PY
+
       - name: Download external subscriptions
         run: bash scripts/download.sh
 
@@ -66,7 +98,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add -f subscribe.txt output stats.json .timestamp
+          git add -f subscribe.txt output stats.json .timestamp configs/external-sources.list
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
