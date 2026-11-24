@@ -247,20 +247,25 @@ class ParserTests(unittest.TestCase):
             records = [{**personal, "id": "p", "source": "personal.txt", "personal": True}]
             records += [{**item, "id": f"e{i}", "source": f"external_{i}.txt", "personal": False} for i, item in enumerate(external)]
             (work / "records.json").write_text(json.dumps({"personal": records[:1], "external": records[1:]}))
-            validation = {item["id"]: {"status": "healthy"} for item in records}
+            validation = {
+                "p": {"status": "healthy", "latency_ms": 100, "response_ms": 130},
+                "e0": {"status": "healthy", "latency_ms": 50, "response_ms": 70},
+                "e1": {"status": "healthy", "latency_ms": 5, "response_ms": 20},
+                "e2": {"status": "healthy", "latency_ms": 10, "response_ms": 25},
+            }
             (work / "validation.json").write_text(json.dumps(validation))
             (work / "download_status.json").write_text("[]")
             freedom.ROOT, freedom.WORK, freedom.OUTPUT = root, work, output
             freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = 2, 1
             freedom.publish()
             main_data = base64.b64decode((output / "subscribe.txt").read_bytes()).decode().splitlines()
-            self.assertEqual(len(main_data), 3)
+            self.assertEqual(len(main_data), 2)\n            self.assertEqual(main_data, [records[2]["uri"], records[3]["uri"]])
             self.assertEqual((root / "subscribe.txt").read_bytes(), (output / "subscribe.txt").read_bytes())
             proto_data = base64.b64decode((output / "subscribe-vless.txt").read_bytes()).decode().splitlines()
             self.assertEqual(len(proto_data), 1)
             stats = json.loads((root / "stats.json").read_text())
             self.assertEqual(stats["current"]["configs"]["unique"], 4)
-            self.assertEqual(stats["current"]["published"]["main"], 3)
+            self.assertEqual(stats["current"]["published"]["main"], 2)\n            self.assertEqual(stats["current"]["published"]["main_limit"], 2)
             self.assertEqual(len(stats["history"]), 1)
         freedom.ROOT, freedom.WORK, freedom.OUTPUT, freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = original
 
@@ -311,7 +316,7 @@ class ParserTests(unittest.TestCase):
             self.assertEqual(len(base64.b64decode((output / "healthy.txt").read_bytes()).decode().splitlines()), 1)
             self.assertEqual(len(base64.b64decode((output / "unhealthy.txt").read_bytes()).decode().splitlines()), 1)
             stats = json.loads((root / "stats.json").read_text())
-            self.assertNotIn("fingerprints", stats["current"])
+            self.assertNotIn("fingerprints", stats["current"])\n            self.assertNotIn("fingerprint", json.dumps(stats).lower())
             self.assertNotIn("added", stats["history"][-1])
             self.assertEqual(stats["current"]["zero_output_sources"][0]["url"], "https://example.test/sub")
         freedom.ROOT, freedom.WORK, freedom.OUTPUT, freedom.MAX_EXTERNAL, freedom.MAX_PER_PROTOCOL = original
