@@ -1,6 +1,6 @@
 {
   "project": "Freedom",
-  "last_updated": "2026-11-27T04:51:03.490462+00:00",
+  "last_updated": "2026-11-27T05:19:47.474910+00:00",
   "current": {
     "sources": {
       "total": 25,
@@ -9,15 +9,15 @@
       "zero_healthy": 0
     },
     "configs": {
-      "discovered": 41640,
-      "unique": 29887,
-      "tested": 29777,
-      "healthy": 3691,
-      "unhealthy": 26086,
+      "discovered": 41641,
+      "unique": 29889,
+      "tested": 29779,
+      "healthy": 3577,
+      "unhealthy": 26202,
       "unsupported": 110,
       "unknown": 0,
-      "health_percentage": 12.35,
-      "tested_success_percentage": 12.4
+      "health_percentage": 11.97,
+      "tested_success_percentage": 12.01
     },
     "published": {
       "main": 500,
@@ -31,20 +31,20 @@
         "ssr": 0,
         "tuic": 0,
         "hysteria2": 100,
-        "socks": 58
+        "socks": 57
       }
     },
     "source_quality": {
       "external_0001.txt": {
         "configs": 508,
-        "healthy": 296,
-        "unhealthy": 212,
+        "healthy": 245,
+        "unhealthy": 263,
         "unsupported": 0,
         "unknown": 0,
-        "score": 58.27,
-        "average_latency_ms": 1896.46,
-        "average_response_ms": 1896.55,
-        "rank": 9,
+        "score": 48.23,
+        "average_latency_ms": 1090.05,
+        "average_response_ms": 1090.21,
+        "rank": 11,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/BlueKnightNet/blueknight_net-sub-link/refs/heads/blue-knight-net/BlueKnight.txt",
         "download_bytes": 155301
@@ -56,8 +56,8 @@
         "unsupported": 0,
         "unknown": 0,
         "score": 29.46,
-        "average_latency_ms": 514.66,
-        "average_response_ms": 514.66,
+        "average_latency_ms": 647.18,
+        "average_response_ms": 647.21,
         "rank": 18,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/patterniha/Free-Configs/main/configs.txt",
@@ -70,50 +70,50 @@
         "unsupported": 0,
         "unknown": 0,
         "score": 66.67,
-        "average_latency_ms": 1122.0,
-        "average_response_ms": 1122.0,
-        "rank": 5,
+        "average_latency_ms": 1387.0,
+        "average_response_ms": 1387.0,
+        "rank": 6,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mtn/sub_1.txt",
         "download_bytes": 2456
       },
       "external_0004.txt": {
-        "configs": 2,
-        "healthy": 2,
+        "configs": 1,
+        "healthy": 1,
         "unhealthy": 0,
         "unsupported": 0,
         "unknown": 0,
         "score": 100.0,
-        "average_latency_ms": 472.0,
-        "average_response_ms": 472.0,
+        "average_latency_ms": 299.0,
+        "average_response_ms": 299.0,
         "rank": 1,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mci/sub_1.txt",
-        "download_bytes": 364
+        "download_bytes": 184
       },
       "external_0005.txt": {
         "configs": 486,
-        "healthy": 147,
-        "unhealthy": 339,
+        "healthy": 168,
+        "unhealthy": 318,
         "unsupported": 0,
         "unknown": 0,
-        "score": 30.25,
-        "average_latency_ms": 1203.73,
-        "average_response_ms": 1203.74,
-        "rank": 17,
+        "score": 34.57,
+        "average_latency_ms": 1052.79,
+        "average_response_ms": 1052.87,
+        "rank": 15,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt",
         "download_bytes": 69433
       },
       "external_0006.txt": {
         "configs": 500,
-        "healthy": 305,
-        "unhealthy": 195,
+        "healthy": 321,
+        "unhealthy": 179,
         "unsupported": 0,
         "unknown": 0,
-        "score": 61.0,
-        "average_latency_ms": 527.75,
-        "average_response_ms": 527.83,
+        "score": 64.2,
+        "average_latency_ms": 363.3,
+        "average_response_ms": 363.36,
         "rank": 7,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub2.txt",
@@ -121,27 +121,27 @@
       },
       "external_0007.txt": {
         "configs": 500,
-        "healthy": 378,
-        "unhealthy": 122,
+        "healthy": 369,
+        "unhealthy": 131,
         "unsupported": 0,
         "unknown": 0,
-        "score": 75.6,
-        "average_latency_ms": 674.14,
-        "average_response_ms": 674.22,
-        "rank": 3,
+        "score": 73.8,
+        "average_latency_ms": 399.44,
+        "average_response_ms": 399.47,
+        "rank": 4,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub3.txt",
         "download_bytes": 56718
       },
       "external_0008.txt": {
         "configs": 6857,
-        "healthy": 16,
-        "unhealthy": 6841,
+        "healthy": 14,
+        "unhealthy": 6843,
         "unsupported": 0,
         "unknown": 0,
-        "score": 0.23,
-        "average_latency_ms": 259.06,
-        "average_response_ms": 259.06,
+        "score": 0.2,
+        "average_latency_ms": 214.5,
+        "average_response_ms": 214.71,
         "rank": 25,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mermeroo/Loon/refs/heads/main/all.nodes.txt",
@@ -154,8 +154,8 @@
         "unsupported": 59,
         "unknown": 0,
         "score": 3.89,
-        "average_latency_ms": 630.66,
-        "average_response_ms": 630.79,
+        "average_latency_ms": 552.24,
+        "average_response_ms": 552.31,
         "rank": 21,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mahdibland/ShadowsocksAggregator/master/sub/sub_merge.txt",
@@ -168,8 +168,8 @@
         "unsupported": 59,
         "unknown": 0,
         "score": 3.89,
-        "average_latency_ms": 630.66,
-        "average_response_ms": 630.79,
+        "average_latency_ms": 552.24,
+        "average_response_ms": 552.31,
         "rank": 22,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt",
@@ -177,28 +177,28 @@
       },
       "external_0011.txt": {
         "configs": 1495,
-        "healthy": 733,
-        "unhealthy": 762,
+        "healthy": 744,
+        "unhealthy": 751,
         "unsupported": 0,
         "unknown": 0,
-        "score": 49.03,
-        "average_latency_ms": 912.47,
-        "average_response_ms": 912.63,
-        "rank": 11,
+        "score": 49.77,
+        "average_latency_ms": 922.05,
+        "average_response_ms": 922.11,
+        "rank": 10,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/nodev2ray.txt",
         "download_bytes": 386690
       },
       "external_0012.txt": {
         "configs": 1439,
-        "healthy": 715,
-        "unhealthy": 724,
+        "healthy": 725,
+        "unhealthy": 714,
         "unsupported": 0,
         "unknown": 0,
-        "score": 49.69,
-        "average_latency_ms": 886.15,
-        "average_response_ms": 886.31,
-        "rank": 10,
+        "score": 50.38,
+        "average_latency_ms": 865.58,
+        "average_response_ms": 865.64,
+        "rank": 9,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/clashmeta.txt",
         "download_bytes": 365316
@@ -210,8 +210,8 @@
         "unsupported": 0,
         "unknown": 0,
         "score": 2.86,
-        "average_latency_ms": 956.0,
-        "average_response_ms": 956.0,
+        "average_latency_ms": 575.0,
+        "average_response_ms": 575.0,
         "rank": 23,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/zjfb/SubCrawler/main/sub/share/all",
@@ -219,27 +219,27 @@
       },
       "external_0014.txt": {
         "configs": 500,
-        "healthy": 423,
-        "unhealthy": 77,
+        "healthy": 421,
+        "unhealthy": 79,
         "unsupported": 0,
         "unknown": 0,
-        "score": 84.6,
-        "average_latency_ms": 485.06,
-        "average_response_ms": 485.18,
-        "rank": 2,
+        "score": 84.2,
+        "average_latency_ms": 359.19,
+        "average_response_ms": 359.21,
+        "rank": 3,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub4.txt",
         "download_bytes": 78479
       },
       "external_0015.txt": {
         "configs": 14311,
-        "healthy": 2274,
-        "unhealthy": 11987,
+        "healthy": 2220,
+        "unhealthy": 12041,
         "unsupported": 50,
         "unknown": 0,
-        "score": 15.95,
-        "average_latency_ms": 1445.75,
-        "average_response_ms": 1445.87,
+        "score": 15.57,
+        "average_latency_ms": 1296.04,
+        "average_response_ms": 1296.11,
         "rank": 20,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/mheidari98/.proxy/main/all",
@@ -247,13 +247,13 @@
       },
       "external_0016.txt": {
         "configs": 318,
-        "healthy": 124,
-        "unhealthy": 194,
+        "healthy": 123,
+        "unhealthy": 195,
         "unsupported": 0,
         "unknown": 0,
-        "score": 38.99,
-        "average_latency_ms": 915.6,
-        "average_response_ms": 915.69,
+        "score": 38.68,
+        "average_latency_ms": 866.14,
+        "average_response_ms": 866.19,
         "rank": 14,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/clash.yml",
@@ -261,14 +261,14 @@
       },
       "external_0017.txt": {
         "configs": 3,
-        "healthy": 2,
-        "unhealthy": 1,
+        "healthy": 3,
+        "unhealthy": 0,
         "unsupported": 0,
         "unknown": 0,
-        "score": 66.67,
-        "average_latency_ms": 1389.5,
-        "average_response_ms": 1389.5,
-        "rank": 6,
+        "score": 100.0,
+        "average_latency_ms": 2086.0,
+        "average_response_ms": 2086.0,
+        "rank": 2,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/ermaozi01/free_clash_vpn/main/subscribe/clash.yml",
         "download_bytes": 8871
@@ -280,8 +280,8 @@
         "unsupported": 0,
         "unknown": 0,
         "score": 60.0,
-        "average_latency_ms": 522.33,
-        "average_response_ms": 522.33,
+        "average_latency_ms": 350.33,
+        "average_response_ms": 350.33,
         "rank": 8,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/zhangkaiitugithub/passcro/main/speednodes.yaml",
@@ -289,13 +289,13 @@
       },
       "external_0019.txt": {
         "configs": 1795,
-        "healthy": 14,
-        "unhealthy": 1781,
+        "healthy": 13,
+        "unhealthy": 1782,
         "unsupported": 0,
         "unknown": 0,
-        "score": 0.78,
-        "average_latency_ms": 1121.07,
-        "average_response_ms": 1121.14,
+        "score": 0.72,
+        "average_latency_ms": 319.54,
+        "average_response_ms": 319.62,
         "rank": 24,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/anaer/Sub/main/clash.yaml",
@@ -303,13 +303,13 @@
       },
       "external_0020.txt": {
         "configs": 2451,
-        "healthy": 1106,
-        "unhealthy": 1344,
+        "healthy": 1113,
+        "unhealthy": 1337,
         "unsupported": 1,
         "unknown": 0,
-        "score": 45.14,
-        "average_latency_ms": 931.25,
-        "average_response_ms": 931.37,
+        "score": 45.43,
+        "average_latency_ms": 763.96,
+        "average_response_ms": 764.02,
         "rank": 13,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/nodev2ray.yaml",
@@ -317,31 +317,31 @@
       },
       "external_0021.txt": {
         "configs": 1087,
-        "healthy": 500,
-        "unhealthy": 586,
+        "healthy": 505,
+        "unhealthy": 581,
         "unsupported": 1,
         "unknown": 0,
-        "score": 46.04,
-        "average_latency_ms": 892.6,
-        "average_response_ms": 892.72,
+        "score": 46.5,
+        "average_latency_ms": 689.45,
+        "average_response_ms": 689.5,
         "rank": 12,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/clashmeta.yaml",
         "download_bytes": 452793
       },
       "external_0022.txt": {
-        "configs": 161,
-        "healthy": 50,
-        "unhealthy": 111,
+        "configs": 163,
+        "healthy": 53,
+        "unhealthy": 110,
         "unsupported": 0,
         "unknown": 0,
-        "score": 31.06,
-        "average_latency_ms": 1927.78,
-        "average_response_ms": 1927.8,
-        "rank": 16,
+        "score": 32.52,
+        "average_latency_ms": 534.3,
+        "average_response_ms": 534.43,
+        "rank": 17,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/vmess",
-        "download_bytes": 57261
+        "download_bytes": 58898
       },
       "external_0023.txt": {
         "configs": 3,
@@ -350,9 +350,9 @@
         "unsupported": 0,
         "unknown": 0,
         "score": 33.33,
-        "average_latency_ms": 705.0,
-        "average_response_ms": 705.0,
-        "rank": 15,
+        "average_latency_ms": 414.0,
+        "average_response_ms": 414.0,
+        "rank": 16,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/hy2",
         "download_bytes": 613
@@ -364,8 +364,8 @@
         "unsupported": 0,
         "unknown": 0,
         "score": 19.4,
-        "average_latency_ms": 708.23,
-        "average_response_ms": 708.54,
+        "average_latency_ms": 550.92,
+        "average_response_ms": 551.0,
         "rank": 19,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/hysteria2",
@@ -373,14 +373,14 @@
       },
       "external_0025.txt": {
         "configs": 132,
-        "healthy": 95,
-        "unhealthy": 37,
+        "healthy": 91,
+        "unhealthy": 41,
         "unsupported": 0,
         "unknown": 0,
-        "score": 71.97,
-        "average_latency_ms": 951.27,
-        "average_response_ms": 951.45,
-        "rank": 4,
+        "score": 68.94,
+        "average_latency_ms": 741.11,
+        "average_response_ms": 741.19,
+        "rank": 5,
         "download_status": "success",
         "url": "https://raw.githubusercontent.com/iampedii/whitedns-sub/refs/heads/main/base64.txt",
         "download_bytes": 47680
@@ -392,56 +392,56 @@
         "source": "external_0004.txt",
         "url": "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mci/sub_1.txt",
         "score": 100.0,
-        "healthy": 2,
-        "average_latency_ms": 472.0
+        "healthy": 1,
+        "average_latency_ms": 299.0
       },
       {
         "rank": 2,
-        "source": "external_0014.txt",
-        "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub4.txt",
-        "score": 84.6,
-        "healthy": 423,
-        "average_latency_ms": 485.06
+        "source": "external_0017.txt",
+        "url": "https://raw.githubusercontent.com/ermaozi01/free_clash_vpn/main/subscribe/clash.yml",
+        "score": 100.0,
+        "healthy": 3,
+        "average_latency_ms": 2086.0
       },
       {
         "rank": 3,
-        "source": "external_0007.txt",
-        "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub3.txt",
-        "score": 75.6,
-        "healthy": 378,
-        "average_latency_ms": 674.14
+        "source": "external_0014.txt",
+        "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub4.txt",
+        "score": 84.2,
+        "healthy": 421,
+        "average_latency_ms": 359.19
       },
       {
         "rank": 4,
-        "source": "external_0025.txt",
-        "url": "https://raw.githubusercontent.com/iampedii/whitedns-sub/refs/heads/main/base64.txt",
-        "score": 71.97,
-        "healthy": 95,
-        "average_latency_ms": 951.27
+        "source": "external_0007.txt",
+        "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub3.txt",
+        "score": 73.8,
+        "healthy": 369,
+        "average_latency_ms": 399.44
       },
       {
         "rank": 5,
+        "source": "external_0025.txt",
+        "url": "https://raw.githubusercontent.com/iampedii/whitedns-sub/refs/heads/main/base64.txt",
+        "score": 68.94,
+        "healthy": 91,
+        "average_latency_ms": 741.11
+      },
+      {
+        "rank": 6,
         "source": "external_0003.txt",
         "url": "https://raw.githubusercontent.com/mahsanet/MahsaFreeConfig/refs/heads/main/mtn/sub_1.txt",
         "score": 66.67,
         "healthy": 4,
-        "average_latency_ms": 1122.0
-      },
-      {
-        "rank": 6,
-        "source": "external_0017.txt",
-        "url": "https://raw.githubusercontent.com/ermaozi01/free_clash_vpn/main/subscribe/clash.yml",
-        "score": 66.67,
-        "healthy": 2,
-        "average_latency_ms": 1389.5
+        "average_latency_ms": 1387.0
       },
       {
         "rank": 7,
         "source": "external_0006.txt",
         "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub2.txt",
-        "score": 61.0,
-        "healthy": 305,
-        "average_latency_ms": 527.75
+        "score": 64.2,
+        "healthy": 321,
+        "average_latency_ms": 363.3
       },
       {
         "rank": 8,
@@ -449,79 +449,79 @@
         "url": "https://raw.githubusercontent.com/zhangkaiitugithub/passcro/main/speednodes.yaml",
         "score": 60.0,
         "healthy": 3,
-        "average_latency_ms": 522.33
+        "average_latency_ms": 350.33
       },
       {
         "rank": 9,
-        "source": "external_0001.txt",
-        "url": "https://raw.githubusercontent.com/BlueKnightNet/blueknight_net-sub-link/refs/heads/blue-knight-net/BlueKnight.txt",
-        "score": 58.27,
-        "healthy": 296,
-        "average_latency_ms": 1896.46
+        "source": "external_0012.txt",
+        "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/clashmeta.txt",
+        "score": 50.38,
+        "healthy": 725,
+        "average_latency_ms": 865.58
       },
       {
         "rank": 10,
-        "source": "external_0012.txt",
-        "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/clashmeta.txt",
-        "score": 49.69,
-        "healthy": 715,
-        "average_latency_ms": 886.15
+        "source": "external_0011.txt",
+        "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/nodev2ray.txt",
+        "score": 49.77,
+        "healthy": 744,
+        "average_latency_ms": 922.05
       },
       {
         "rank": 11,
-        "source": "external_0011.txt",
-        "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/nodev2ray.txt",
-        "score": 49.03,
-        "healthy": 733,
-        "average_latency_ms": 912.47
+        "source": "external_0001.txt",
+        "url": "https://raw.githubusercontent.com/BlueKnightNet/blueknight_net-sub-link/refs/heads/blue-knight-net/BlueKnight.txt",
+        "score": 48.23,
+        "healthy": 245,
+        "average_latency_ms": 1090.05
       },
       {
         "rank": 12,
         "source": "external_0021.txt",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/clashmeta.yaml",
-        "score": 46.04,
-        "healthy": 500,
-        "average_latency_ms": 892.6
+        "score": 46.5,
+        "healthy": 505,
+        "average_latency_ms": 689.45
       },
       {
         "rank": 13,
         "source": "external_0020.txt",
         "url": "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/main/nodes/nodev2ray.yaml",
-        "score": 45.14,
-        "healthy": 1106,
-        "average_latency_ms": 931.25
+        "score": 45.43,
+        "healthy": 1113,
+        "average_latency_ms": 763.96
       },
       {
         "rank": 14,
         "source": "external_0016.txt",
         "url": "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/clash.yml",
-        "score": 38.99,
-        "healthy": 124,
-        "average_latency_ms": 915.6
+        "score": 38.68,
+        "healthy": 123,
+        "average_latency_ms": 866.14
       },
       {
         "rank": 15,
+        "source": "external_0005.txt",
+        "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt",
+        "score": 34.57,
+        "healthy": 168,
+        "average_latency_ms": 1052.79
+      },
+      {
+        "rank": 16,
         "source": "external_0023.txt",
         "url": "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/hy2",
         "score": 33.33,
         "healthy": 1,
-        "average_latency_ms": 705.0
-      },
-      {
-        "rank": 16,
-        "source": "external_0022.txt",
-        "url": "https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/vmess",
-        "score": 31.06,
-        "healthy": 50,
-        "average_latency_ms": 1927.78
+        "average_latency_ms": 414.0
       },
       {
         "rank": 17,
-        "source": "external_0005.txt",
-        "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Sub1.txt",
-        "score": 30.25,
-        "healthy": 147,
-        "average_latency_ms": 1203.73
+        "source": "external_0022.txt",
+        "url": "https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/vmess",
+        "score": 32.52,
+        "healthy": 53,
+        "average_latency_ms": 534.3
       },
       {
         "rank": 18,
@@ -529,7 +529,7 @@
         "url": "https://raw.githubusercontent.com/patterniha/Free-Configs/main/configs.txt",
         "score": 29.46,
         "healthy": 38,
-        "average_latency_ms": 514.66
+        "average_latency_ms": 647.18
       },
       {
         "rank": 19,
@@ -537,15 +537,15 @@
         "url": "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/hysteria2",
         "score": 19.4,
         "healthy": 13,
-        "average_latency_ms": 708.23
+        "average_latency_ms": 550.92
       },
       {
         "rank": 20,
         "source": "external_0015.txt",
         "url": "https://raw.githubusercontent.com/mheidari98/.proxy/main/all",
-        "score": 15.95,
-        "healthy": 2274,
-        "average_latency_ms": 1445.75
+        "score": 15.57,
+        "healthy": 2220,
+        "average_latency_ms": 1296.04
       },
       {
         "rank": 21,
@@ -553,7 +553,7 @@
         "url": "https://raw.githubusercontent.com/mahdibland/ShadowsocksAggregator/master/sub/sub_merge.txt",
         "score": 3.89,
         "healthy": 170,
-        "average_latency_ms": 630.66
+        "average_latency_ms": 552.24
       },
       {
         "rank": 22,
@@ -561,7 +561,7 @@
         "url": "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt",
         "score": 3.89,
         "healthy": 170,
-        "average_latency_ms": 630.66
+        "average_latency_ms": 552.24
       },
       {
         "rank": 23,
@@ -569,44 +569,44 @@
         "url": "https://raw.githubusercontent.com/zjfb/SubCrawler/main/sub/share/all",
         "score": 2.86,
         "healthy": 1,
-        "average_latency_ms": 956.0
+        "average_latency_ms": 575.0
       },
       {
         "rank": 24,
         "source": "external_0019.txt",
         "url": "https://raw.githubusercontent.com/anaer/Sub/main/clash.yaml",
-        "score": 0.78,
-        "healthy": 14,
-        "average_latency_ms": 1121.07
+        "score": 0.72,
+        "healthy": 13,
+        "average_latency_ms": 319.54
       },
       {
         "rank": 25,
         "source": "external_0008.txt",
         "url": "https://raw.githubusercontent.com/mermeroo/Loon/refs/heads/main/all.nodes.txt",
-        "score": 0.23,
-        "healthy": 16,
-        "average_latency_ms": 259.06
+        "score": 0.2,
+        "healthy": 14,
+        "average_latency_ms": 214.5
       }
     ],
     "zero_output_sources": []
   },
   "history": [
     {
-      "date": "2026-11-27T04:19:38.432344+00:00",
-      "discovered": 41640,
-      "unique": 29887,
-      "healthy": 3707,
-      "unhealthy": 26070,
-      "unsupported": 110,
-      "unknown": 0,
-      "published": 500
-    },
-    {
       "date": "2026-11-27T04:51:03.490432+00:00",
       "discovered": 41640,
       "unique": 29887,
       "healthy": 3691,
       "unhealthy": 26086,
+      "unsupported": 110,
+      "unknown": 0,
+      "published": 500
+    },
+    {
+      "date": "2026-11-27T05:19:47.474877+00:00",
+      "discovered": 41641,
+      "unique": 29889,
+      "healthy": 3577,
+      "unhealthy": 26202,
       "unsupported": 110,
       "unknown": 0,
       "published": 500
